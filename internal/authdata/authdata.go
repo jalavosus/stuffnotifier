@@ -1,9 +1,21 @@
 package authdata
 
+import (
+	"fmt"
+)
+
 type AuthData interface {
 	Account() string
 	Key() string
 	Secret() string
+}
+
+type ServiceAuthData interface {
+	AuthData
+	Host() string
+	Port() int
+	Username() string
+	Password() string
 }
 
 type authData struct {
@@ -33,4 +45,48 @@ func (a authData) Key() string {
 
 func (a authData) Secret() string {
 	return a.secret
+}
+
+type serviceAuthData struct {
+	host     string
+	port     int
+	username string
+	password string
+}
+
+func NewServiceAuthData(host string, port int, username, password string) ServiceAuthData {
+	return serviceAuthData{
+		host:     host,
+		port:     port,
+		username: username,
+		password: password,
+	}
+}
+
+func (s serviceAuthData) Host() string {
+	return s.host
+}
+
+func (s serviceAuthData) Port() int {
+	return s.port
+}
+
+func (s serviceAuthData) Username() string {
+	return s.username
+}
+
+func (s serviceAuthData) Password() string {
+	return s.password
+}
+
+func (s serviceAuthData) Account() string {
+	return fmt.Sprintf("%[1]s:%[2]d", s.Host(), s.Port())
+}
+
+func (s serviceAuthData) Key() string {
+	return s.username
+}
+
+func (s serviceAuthData) Secret() string {
+	return s.password
 }

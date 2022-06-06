@@ -93,3 +93,13 @@ func FlightAwareAPIAuth() (auth AuthData, err error) {
 
 	return
 }
+
+func RedisAuth() (auth ServiceAuthData, err error) {
+	redisHost, _ := env.String(env.RedisHost, "localhost")
+	redisPort, _ := env.Int(env.RedisPort, 6379)
+	redisPassword, _ := env.String(env.RedisPassword, "")
+
+	auth = NewServiceAuthData(redisHost, redisPort, "", redisPassword)
+
+	return
+}
