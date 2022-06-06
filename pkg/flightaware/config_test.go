@@ -27,10 +27,10 @@ func TestLoadConfig(t *testing.T) {
 				GateArrival:   true,
 				BaggageClaim:  false,
 				PreArrival: flightaware.PreEventConfig{
-					Enabled:          true,
-					EstimatedArrival: true,
-					ScheduledArrival: false,
-					Offset:           30 * time.Minute,
+					Enabled:   true,
+					Estimated: true,
+					Scheduled: false,
+					Offset:    30 * time.Minute,
 				},
 			},
 		}
