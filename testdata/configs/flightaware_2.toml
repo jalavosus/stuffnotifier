@@ -1,0 +1,13 @@
+PollInterval = "2m"
+
+[Auth]
+ApiKey = "1234567"
+
+[Notifications]
+UseLocalTime = false
+GateDeparture = true
+GateArrival = true
+BaggageClaim = true
+
+[Notifications.PreArrival]
+Enabled = false

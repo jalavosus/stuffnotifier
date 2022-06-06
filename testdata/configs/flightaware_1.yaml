@@ -1,0 +1,14 @@
+poll_interval: 2m
+notifications:
+  use_local_time: true
+  gate_departure: false
+  takeoff: true
+  landing: true
+  gate_arrival: true
+  baggage_claim: false
+
+  pre_arrival:
+    enabled: true
+    estimated_arrival: true
+    scheduled_arrival: false
+    offset: 30m

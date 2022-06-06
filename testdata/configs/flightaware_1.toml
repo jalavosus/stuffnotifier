@@ -1,0 +1,15 @@
+PollInterval = "2m"
+
+[Notifications]
+    UseLocalTime = true
+    GateDeparture = false
+    Takeoff = true
+    Landing = true
+    GateArrival = true
+    BaggageClaim = false
+
+    [Notifications.PreArrival]
+        Enabled = true
+        EstimatedArrival = true
+        ScheduledArrival = false
+        Offset = "30m"

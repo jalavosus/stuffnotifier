@@ -1,0 +1,13 @@
+poll_interval: 2m
+
+auth:
+  api_key: "1234567"
+
+notifications:
+  use_local_time: false
+  gate_departure: true
+  gate_arrival: true
+  baggage_claim: true
+
+  pre_arrival:
+    enabled: false
