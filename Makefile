@@ -20,11 +20,7 @@ $(GO) build -o $1 $2
 endef
 
 define _fieldalign
-@fieldalignment $1 $(strip $2)
-endef
-
-define _fieldalignfix
-@fieldalignment -fix $1
+@fieldalignment $(strip $2) $1
 endef
 
 all : clean build
@@ -44,7 +40,7 @@ fieldalign :
 	$(call _fieldalign,$(FILES))
 
 fieldalign-fix :
-	$(call _fieldalignfix,$(FILES))
+	$(call _fieldalign,$(FILES),-fix)
 
 fmt :
 	gofmt -s -w ./
