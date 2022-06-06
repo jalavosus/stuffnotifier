@@ -3,8 +3,8 @@ package flightaware
 import (
 	"context"
 
-	"github.com/stoicturtle/stuffnotifier/internal/logging"
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/internal/logging"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
 )
 
 var logger = logging.NewLogger()

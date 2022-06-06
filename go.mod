@@ -1,4 +1,4 @@
-module github.com/stoicturtle/stuffnotifier
+module github.com/jalavosus/stuffnotifier
 
 go 1.18
 

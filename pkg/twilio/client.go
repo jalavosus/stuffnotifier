@@ -4,10 +4,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/twilio/twilio-go"
 
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
 
-	"github.com/stoicturtle/stuffnotifier/internal/env"
-	"github.com/stoicturtle/stuffnotifier/pkg/singleton"
+	"github.com/jalavosus/stuffnotifier/internal/env"
+	"github.com/jalavosus/stuffnotifier/pkg/singleton"
 )
 
 type Client struct {

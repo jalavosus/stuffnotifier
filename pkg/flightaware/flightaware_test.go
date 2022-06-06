@@ -8,8 +8,8 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
 )
 
 func TestFlightInformation(t *testing.T) {

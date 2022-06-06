@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/stoicturtle/stuffnotifier/internal/logging"
+	"github.com/jalavosus/stuffnotifier/internal/logging"
 )
 
 var logger = logging.NewLogger()

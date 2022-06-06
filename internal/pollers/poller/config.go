@@ -7,14 +7,14 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/stoicturtle/stuffnotifier/internal/datastore"
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
-	"github.com/stoicturtle/stuffnotifier/pkg/discord"
-	"github.com/stoicturtle/stuffnotifier/pkg/errs"
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
-	"github.com/stoicturtle/stuffnotifier/pkg/gemini"
-	"github.com/stoicturtle/stuffnotifier/pkg/slack"
-	"github.com/stoicturtle/stuffnotifier/pkg/twilio"
+	"github.com/jalavosus/stuffnotifier/internal/datastore"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/pkg/discord"
+	"github.com/jalavosus/stuffnotifier/pkg/errs"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/pkg/gemini"
+	"github.com/jalavosus/stuffnotifier/pkg/slack"
+	"github.com/jalavosus/stuffnotifier/pkg/twilio"
 )
 
 type Config struct {

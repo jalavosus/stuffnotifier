@@ -3,7 +3,7 @@ package datastore
 import (
 	"time"
 
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 const (

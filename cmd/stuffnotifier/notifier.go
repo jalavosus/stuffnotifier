@@ -10,9 +10,9 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	fapoller "github.com/stoicturtle/stuffnotifier/internal/pollers/flightawarepoller"
-	"github.com/stoicturtle/stuffnotifier/internal/pollers/poller"
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
+	fapoller "github.com/jalavosus/stuffnotifier/internal/pollers/flightawarepoller"
+	"github.com/jalavosus/stuffnotifier/internal/pollers/poller"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
 )
 
 var (

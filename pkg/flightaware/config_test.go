@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
 )
 
 func TestLoadConfig(t *testing.T) {

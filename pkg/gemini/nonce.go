@@ -10,8 +10,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/stoicturtle/stuffnotifier/internal/nonceticker"
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/internal/nonceticker"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
 )
 
 type NoncePayload struct {

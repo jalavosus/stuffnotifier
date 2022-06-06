@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/urfave/cli/v2"
 
-	"github.com/stoicturtle/stuffnotifier/internal/pollers/poller"
-	"github.com/stoicturtle/stuffnotifier/pkg/discord"
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
-	"github.com/stoicturtle/stuffnotifier/pkg/twilio"
+	"github.com/jalavosus/stuffnotifier/internal/pollers/poller"
+	"github.com/jalavosus/stuffnotifier/pkg/discord"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/pkg/twilio"
 )
 
 func loadPollerConfig(c *cli.Context) (*poller.Config, error) {

@@ -3,7 +3,7 @@ package gemini
 import (
 	"time"
 
-	"github.com/stoicturtle/stuffnotifier/internal/logging"
+	"github.com/jalavosus/stuffnotifier/internal/logging"
 )
 
 var logger = logging.NewLogger()

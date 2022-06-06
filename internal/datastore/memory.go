@@ -9,7 +9,7 @@ import (
 	ristrettoz "github.com/dgraph-io/ristretto/z"
 	"github.com/pkg/errors"
 
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 const (

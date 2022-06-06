@@ -1,7 +1,7 @@
 package authdata
 
 import (
-	"github.com/stoicturtle/stuffnotifier/internal/env"
+	"github.com/jalavosus/stuffnotifier/internal/env"
 )
 
 // GeminiAPIAuth returns an AuthData whose

@@ -5,7 +5,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
 )
 
 type FlightAwareAlert struct {

@@ -8,10 +8,10 @@ import (
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 
-	"github.com/stoicturtle/stuffnotifier/internal/messages"
-	"github.com/stoicturtle/stuffnotifier/internal/pollers/poller"
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
-	"github.com/stoicturtle/stuffnotifier/pkg/gemini"
+	"github.com/jalavosus/stuffnotifier/internal/messages"
+	"github.com/jalavosus/stuffnotifier/internal/pollers/poller"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/pkg/gemini"
 )
 
 type Poller struct {

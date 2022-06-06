@@ -8,7 +8,7 @@ import (
 	"github.com/go-redis/redis/v9"
 	"github.com/pkg/errors"
 
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 const (

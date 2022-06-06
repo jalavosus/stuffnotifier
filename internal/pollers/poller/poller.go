@@ -7,11 +7,11 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/stoicturtle/stuffnotifier/internal/messages"
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
-	"github.com/stoicturtle/stuffnotifier/pkg/discord"
-	"github.com/stoicturtle/stuffnotifier/pkg/slack"
-	"github.com/stoicturtle/stuffnotifier/pkg/twilio"
+	"github.com/jalavosus/stuffnotifier/internal/messages"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/pkg/discord"
+	"github.com/jalavosus/stuffnotifier/pkg/slack"
+	"github.com/jalavosus/stuffnotifier/pkg/twilio"
 )
 
 type BasePoller struct {

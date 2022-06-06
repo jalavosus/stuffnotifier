@@ -7,8 +7,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
-	"github.com/stoicturtle/stuffnotifier/pkg/errs"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/pkg/errs"
 )
 
 const (

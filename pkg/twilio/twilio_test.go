@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/stoicturtle/stuffnotifier/pkg/twilio"
+	"github.com/jalavosus/stuffnotifier/pkg/twilio"
 )
 
 type testMessage struct {

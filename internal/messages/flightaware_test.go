@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/stoicturtle/stuffnotifier/internal/messages"
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/internal/messages"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
 )
 
 const timeFormat string = "2006-01-02 15:04:05 (-0700)"

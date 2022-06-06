@@ -3,10 +3,10 @@ package flightawarepoller
 import (
 	"time"
 
-	"github.com/stoicturtle/stuffnotifier/internal/datastore"
-	"github.com/stoicturtle/stuffnotifier/internal/pollers/poller"
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
-	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/internal/datastore"
+	"github.com/jalavosus/stuffnotifier/internal/pollers/poller"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
 )
 
 const (

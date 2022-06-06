@@ -10,8 +10,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 
-	"github.com/stoicturtle/stuffnotifier/internal/logging"
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/internal/logging"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 var logger = logging.NewLogger()

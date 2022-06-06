@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 func TestWait(t *testing.T) {

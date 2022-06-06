@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/urfave/cli/v2"
 
-	"github.com/stoicturtle/stuffnotifier/internal/env"
+	"github.com/jalavosus/stuffnotifier/internal/env"
 )
 
 const (

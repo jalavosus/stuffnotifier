@@ -7,8 +7,8 @@ import (
 	"github.com/pkg/errors"
 	openapi "github.com/twilio/twilio-go/rest/api/v2010"
 
-	"github.com/stoicturtle/stuffnotifier/internal/messages"
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/internal/messages"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 func (c *Client) setHttpTimeout(ctx context.Context) {

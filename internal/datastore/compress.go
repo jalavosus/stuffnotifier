@@ -8,7 +8,7 @@ import (
 	"github.com/klauspost/compress/snappy"
 	"github.com/pkg/errors"
 
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 // CompressSnappy compresses a byte slice using standard Snappy compression.

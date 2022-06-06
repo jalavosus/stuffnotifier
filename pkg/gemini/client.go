@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
 
-	"github.com/stoicturtle/stuffnotifier/internal/env"
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
-	"github.com/stoicturtle/stuffnotifier/pkg/errs"
+	"github.com/jalavosus/stuffnotifier/internal/env"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/pkg/errs"
 )
 
 // Client is a superficial wrapper around

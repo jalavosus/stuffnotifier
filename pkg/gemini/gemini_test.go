@@ -8,9 +8,9 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/stoicturtle/stuffnotifier/internal/utils"
-	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
-	"github.com/stoicturtle/stuffnotifier/pkg/gemini"
+	"github.com/jalavosus/stuffnotifier/internal/utils"
+	"github.com/jalavosus/stuffnotifier/pkg/authdata"
+	"github.com/jalavosus/stuffnotifier/pkg/gemini"
 )
 
 type TestCase struct {
