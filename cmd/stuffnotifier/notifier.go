@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
 	"strings"
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 
 	"github.com/urfave/cli/v2"
 
@@ -69,7 +69,7 @@ func flightawareCmdAction(c *cli.Context) error {
 
 	pollerConfig, confErr := loadPollerConfig(c)
 	if confErr != nil {
-		log.Println(confErr)
+		logger.Warn("error loading Poller config", zap.Error(confErr))
 	} else {
 		if pollerConfig != nil {
 			config = *pollerConfig
@@ -81,7 +81,7 @@ func flightawareCmdAction(c *cli.Context) error {
 	if config.Twilio == nil {
 		twilioConf, confErr := loadTwilioConfig(c)
 		if confErr != nil {
-			log.Println(confErr)
+			logger.Warn("error loading Twilio config", zap.Error(confErr))
 		} else if twilioConf != nil {
 			config.Twilio = twilioConf
 		}
@@ -90,7 +90,7 @@ func flightawareCmdAction(c *cli.Context) error {
 	if config.Discord == nil {
 		discordConf, confErr := loadDiscordConfig(c)
 		if confErr != nil {
-			log.Println(confErr)
+			logger.Warn("error loading Discord config", zap.Error(confErr))
 		} else if discordConf != nil {
 			config.Discord = discordConf
 		}
@@ -99,7 +99,7 @@ func flightawareCmdAction(c *cli.Context) error {
 	if config.FlightAware == nil {
 		faConf, confErr := loadFlightAwareConfig(c)
 		if confErr != nil {
-			log.Println(confErr)
+			logger.Warn("error loading FlightAware config", zap.Error(confErr))
 			pollInterval = flightaware.DefaultPollInterval
 		} else if faConf != nil {
 			config.FlightAware = faConf

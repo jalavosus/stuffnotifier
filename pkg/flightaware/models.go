@@ -2,9 +2,10 @@ package flightaware
 
 import (
 	"encoding/json"
-	"log"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 const (
@@ -419,21 +420,21 @@ func parseFlightTimestamp(scheduled, estimated, actual *string) FlightTimestamp 
 	if checkValidString(scheduled) {
 		parsedScheduled, parseErr = time.Parse(apiTimeFormat, *scheduled)
 		if parseErr != nil {
-			log.Panicln(parseErr)
+			logger.Panic("error parsing time string", zap.String("input", *scheduled), zap.Error(parseErr))
 		}
 	}
 
 	if checkValidString(estimated) {
 		parsedEstimated, parseErr = time.Parse(apiTimeFormat, *estimated)
 		if parseErr != nil {
-			log.Panicln(parseErr)
+			logger.Panic("error parsing time string", zap.String("input", *estimated), zap.Error(parseErr))
 		}
 	}
 
 	if checkValidString(actual) {
 		parsedActual, parseErr = time.Parse(apiTimeFormat, *actual)
 		if parseErr != nil {
-			log.Panicln(parseErr)
+			logger.Panic("error parsing time string", zap.String("input", *actual), zap.Error(parseErr))
 		}
 	}
 
@@ -447,11 +448,3 @@ func parseFlightTimestamp(scheduled, estimated, actual *string) FlightTimestamp 
 func checkValidString(s *string) bool {
 	return s != nil && *s != ""
 }
-
-// {
-// "atc_ident": null,
-// "baggage_claim": "6",
-// "seats_cabin_business": 21,
-// "seats_cabin_coach": 253,
-// "seats_cabin_first": 44,
-// },

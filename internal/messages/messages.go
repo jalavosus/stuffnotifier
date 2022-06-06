@@ -10,8 +10,11 @@ import (
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 
+	"github.com/stoicturtle/stuffnotifier/internal/logging"
 	"github.com/stoicturtle/stuffnotifier/internal/utils"
 )
+
+var logger = logging.NewLogger()
 
 type Message interface {
 	// FormatPlaintext should return the message text without any special formatting.

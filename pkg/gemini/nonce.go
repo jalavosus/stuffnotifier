@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/pkg/errors"
+	"go.uber.org/zap"
 
 	"github.com/stoicturtle/stuffnotifier/internal/nonceticker"
 	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
@@ -22,8 +22,7 @@ type NoncePayload struct {
 func (np NoncePayload) Serialize() []byte {
 	marshalled, err := json.Marshal(np)
 	if err != nil {
-		err = errors.WithMessage(err, "error marshalling nonce payload")
-		panic(err)
+		logger.Panic("error marshalling nonce payload", zap.Error(err))
 	}
 
 	return marshalled

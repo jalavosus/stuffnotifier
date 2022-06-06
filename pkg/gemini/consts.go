@@ -2,7 +2,11 @@ package gemini
 
 import (
 	"time"
+
+	"github.com/stoicturtle/stuffnotifier/internal/logging"
 )
+
+var logger = logging.NewLogger()
 
 const (
 	defaultHttpTimeout = 10 * time.Second

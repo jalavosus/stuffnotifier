@@ -3,8 +3,11 @@ package flightaware
 import (
 	"context"
 
+	"github.com/stoicturtle/stuffnotifier/internal/logging"
 	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 )
+
+var logger = logging.NewLogger()
 
 const (
 	apiKeyHeader    string = "x-apikey"

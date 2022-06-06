@@ -1,11 +1,15 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
+
+	"github.com/stoicturtle/stuffnotifier/internal/logging"
 )
+
+var logger = logging.NewLogger()
 
 func main() {
 	app := &cli.App{
@@ -26,6 +30,6 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		log.Println(err)
+		logger.Fatal("", zap.Error(err))
 	}
 }

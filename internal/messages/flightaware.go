@@ -3,6 +3,8 @@ package messages
 import (
 	"text/template"
 
+	"go.uber.org/zap"
+
 	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
 )
 
@@ -33,7 +35,7 @@ type FlightAwareAirportInfo struct {
 func (a FlightAwareAlert) FormatPlaintext() string {
 	msg, err := a.format(a.PlaintextTemplate(), a)
 	if err != nil {
-		panic(err)
+		logger.Panic("error formatting FlightAwareAlert plaintext template", zap.Error(err))
 	}
 
 	return msg

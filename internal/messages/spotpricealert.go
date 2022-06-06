@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+	"go.uber.org/zap"
 )
 
 type SpotPriceAlert struct {
@@ -18,7 +19,7 @@ type SpotPriceAlert struct {
 func (a SpotPriceAlert) FormatPlaintext() string {
 	msg, err := a.format(a.PlaintextTemplate(), a)
 	if err != nil {
-		panic(err)
+		logger.Panic("error formatting SpotPriceAlert plaintext template", zap.Error(err))
 	}
 
 	return msg
@@ -27,7 +28,7 @@ func (a SpotPriceAlert) FormatPlaintext() string {
 func (a SpotPriceAlert) FormatMarkdown() string {
 	msg, err := a.format(a.MarkdownTemplate(), a)
 	if err != nil {
-		panic(err)
+		logger.Panic("error formatting SpotPriceAlert markdown template", zap.Error(err))
 	}
 
 	return msg
