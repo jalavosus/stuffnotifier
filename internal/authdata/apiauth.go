@@ -94,6 +94,17 @@ func FlightAwareAPIAuth() (auth AuthData, err error) {
 	return
 }
 
+func SlackAPIAuth() (auth AuthData, err error) {
+	token, err := env.FromEnv(env.SlackToken)
+	if err != nil {
+		return
+	}
+
+	auth = NewAuthData("", "", token)
+
+	return
+}
+
 func RedisAuth() (auth ServiceAuthData, err error) {
 	redisHost, _ := env.String(env.RedisHost, "localhost")
 	redisPort, _ := env.Int(env.RedisPort, 6379)

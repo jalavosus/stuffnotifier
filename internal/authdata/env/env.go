@@ -31,6 +31,10 @@ const (
 )
 
 const (
+	SlackToken string = "SLACK_TOKEN"
+)
+
+const (
 	RedisHost     string = "REDIS_HOST"
 	RedisPort     string = "REDIS_PORT"
 	RedisPassword string = "REDIS_PASSWORD"
