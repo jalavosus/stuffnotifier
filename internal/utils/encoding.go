@@ -6,7 +6,8 @@ import (
 	"fmt"
 )
 
-type BytesLike interface{ string | []byte }
+// BytesLike is any string or byteslice.
+type BytesLike interface{ ~string | []byte }
 
 func bytesLikeToBytes[T BytesLike](data T) (b []byte) {
 	switch val := (any)(data).(type) {
@@ -30,6 +31,8 @@ func DecodeB64(data string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(data)
 }
 
+// Sha256 returns the SHA256 sum of the passed bytes/string
+// as bytes.
 func Sha256[T BytesLike](data T) (sum []byte) {
 	sum = make([]byte, 32)
 
@@ -39,9 +42,11 @@ func Sha256[T BytesLike](data T) (sum []byte) {
 	return
 }
 
-func Sha256Hex[T BytesLike](data T) string {
+// Sha256Hex returns the result of Sha256 as a
+// human-readable string.
+func Sha256Hex[T BytesLike](data T) (sumHex string) {
 	shaSum := Sha256(data)
-	hash := fmt.Sprintf("%x", shaSum)
+	sumHex = fmt.Sprintf("%x", shaSum)
 
-	return hash
+	return
 }
