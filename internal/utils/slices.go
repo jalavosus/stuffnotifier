@@ -34,3 +34,23 @@ func SliceLast[T any](data []T) (last T) {
 
 	return
 }
+
+// AppendSlices is _not_ an efficient function by any means.
+func AppendSlices[T any](slices ...[]T) []T {
+	var newSlice = make([]T, 0)
+
+	for i, s := range slices {
+		if i == 0 {
+			newSlice = s
+		} else {
+			newSlice2 := make([]T, len(s)+len(newSlice))
+
+			copy(newSlice2, newSlice)
+			copy(newSlice2[len(newSlice):], s)
+			
+			newSlice = newSlice2
+		}
+	}
+
+	return newSlice
+}
