@@ -13,6 +13,7 @@ import (
 	"github.com/stoicturtle/stuffnotifier/pkg/errs"
 	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
 	"github.com/stoicturtle/stuffnotifier/pkg/gemini"
+	"github.com/stoicturtle/stuffnotifier/pkg/slack"
 	"github.com/stoicturtle/stuffnotifier/pkg/twilio"
 )
 
@@ -23,6 +24,7 @@ type Config struct {
 	FlightAware  *flightaware.Config `json:"flightaware,omitempty" yaml:"flightaware,omitempty" toml:"FlightAware,omitempty"`
 	Twilio       *twilio.Config      `json:"twilio,omitempty" yaml:"twilio,omitempty" toml:"Twilio,omitempty"`
 	Discord      *discord.Config     `json:"discord,omitempty" yaml:"discord,omitempty" toml:"Discord,omitempty"`
+	Slack        *slack.Config       `json:"slack,omitempty" yaml:"slack,omitempty" toml:"Slack,omitempty"`
 	Cache        *datastore.Config   `json:"cache,omitempty" yaml:"cache,omitempty" toml:"Cache,omitempty"`
 }
 
