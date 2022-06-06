@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/stoicturtle/stuffnotifier/internal/messages"
+	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
 )
 
 const timeFormat string = "2006-01-02 15:04:05 (-0700)"
@@ -107,20 +108,23 @@ func TestFlightAwareDepartureAlert_FormatPlaintext(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := messages.FlightAwareDepartureAlert{
-				IsGateDeparture:      tt.fields.IsGateDeparture,
-				IsTakeoff:            tt.fields.IsTakeoff,
-				UseLocalTimezone:     tt.fields.UseLocalTimezone,
-				FlightNumber:         tt.fields.FlightNumber,
-				GateNumber:           tt.fields.GateNumber,
-				OriginAirport:        tt.fields.OriginAirport,
-				DestinationAirport:   tt.fields.DestinationAirport,
-				OriginTimezone:       tt.fields.OriginTimezone,
-				DestinationTimezone:  tt.fields.DestinationTimezone,
-				GateDepartureTime:    tt.fields.GateDepartureTime,
-				EstimatedTakeoffTime: tt.fields.EstimatedTakeoffTime,
-				TakeoffTime:          tt.fields.TakeoffTime,
-				EstimatedLandingTime: tt.fields.EstimatedLandingTime,
+			a := messages.FlightAwareAlert{
+				IsGateDeparture:  tt.fields.IsGateDeparture,
+				IsTakeoff:        tt.fields.IsTakeoff,
+				UseLocalTimezone: tt.fields.UseLocalTimezone,
+				FlightNumber:     tt.fields.FlightNumber,
+				Origin: messages.FlightAwareAirportInfo{
+					Airport:  tt.fields.OriginAirport,
+					Gate:     tt.fields.GateNumber,
+					Timezone: tt.fields.OriginTimezone,
+				},
+				Destination: messages.FlightAwareAirportInfo{
+					Airport:  tt.fields.DestinationAirport,
+					Timezone: tt.fields.DestinationTimezone,
+				},
+				GateDepartureTime: flightaware.FlightTimestamp{Actual: tt.fields.GateDepartureTime},
+				TakeoffTime:       flightaware.FlightTimestamp{Estimated: tt.fields.EstimatedTakeoffTime, Actual: tt.fields.TakeoffTime},
+				LandingTime:       flightaware.FlightTimestamp{Estimated: tt.fields.EstimatedLandingTime},
 			}
 
 			_ = a.FormatPlaintext()
