@@ -59,6 +59,7 @@ func tickerV2Endpoint(symbol string) string {
 	return endpointWithSymbol(tickerV2Uri, symbol)
 }
 
+//nolint:deadcode
 func marketDataEndpoint(symbol string) string {
 	return endpointWithSymbol(marketDataUri, symbol)
 }

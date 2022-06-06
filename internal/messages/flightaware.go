@@ -8,19 +8,19 @@ import (
 
 type FlightAwareAlert struct {
 	baseMessage
-	IsGateDeparture   bool
-	IsTakeoff         bool
-	IsGateArrival     bool
-	IsLanding         bool
-	UseLocalTimezone  bool
-	FlightNumber      string
+	GateArrivalTime   flightaware.FlightTimestamp
+	LandingTime       flightaware.FlightTimestamp
+	TakeoffTime       flightaware.FlightTimestamp
+	GateDepartureTime flightaware.FlightTimestamp
+	plaintextTemplate *template.Template
 	Origin            FlightAwareAirportInfo
 	Destination       FlightAwareAirportInfo
-	GateDepartureTime flightaware.FlightTimestamp
-	TakeoffTime       flightaware.FlightTimestamp
-	LandingTime       flightaware.FlightTimestamp
-	GateArrivalTime   flightaware.FlightTimestamp
-	plaintextTemplate *template.Template
+	FlightNumber      string
+	IsLanding         bool
+	IsGateArrival     bool
+	IsTakeoff         bool
+	IsGateDeparture   bool
+	UseLocalTimezone  bool
 }
 
 type FlightAwareAirportInfo struct {

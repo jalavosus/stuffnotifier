@@ -7,7 +7,7 @@ const (
 )
 
 const (
-	base64EncodeErrMsg string = "error encoding bytes to base64"
-	snappyEncodeErrMsg string = "error snappy-compressing bytes"
-	gobEncodeErrMsg    string = "error gob-encoding data"
+	// base64EncodeErrMsg string = "error encoding bytes to base64"
+	// snappyEncodeErrMsg string = "error snappy-compressing bytes"
+	gobEncodeErrMsg string = "error gob-encoding data"
 )

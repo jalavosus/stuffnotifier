@@ -9,11 +9,11 @@ import (
 )
 
 type RecipientConfig struct {
-	UseTwilio                 bool
-	UseDiscord                bool
 	TwilioRecipientNumber     string
 	DiscordRecipientUserId    string
 	DiscordRecipientChannelId string
+	UseTwilio                 bool
+	UseDiscord                bool
 }
 
 func (p BasePoller) BuildRecipientConfig() RecipientConfig {

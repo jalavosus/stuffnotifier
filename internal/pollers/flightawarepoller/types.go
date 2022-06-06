@@ -8,15 +8,15 @@ import (
 )
 
 type CacheEntry struct {
-	InternalId        string
-	FlightId          string
 	FlightData        *flightaware.FlightData
 	OriginData        *flightaware.AirportData
 	DestinationData   *flightaware.AirportData
-	PollInterval      time.Duration
-	Notifications     flightaware.NotificationsConfig
-	RecipientConfig   poller.RecipientConfig
 	NotificationsSent *SentNotifications
+	InternalId        string
+	FlightId          string
+	RecipientConfig   poller.RecipientConfig
+	Notifications     flightaware.NotificationsConfig
+	PollInterval      time.Duration
 }
 
 type SentNotifications struct {

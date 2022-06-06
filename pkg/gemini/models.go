@@ -32,10 +32,10 @@ type SymbolDetailsResponse struct {
 }
 
 type TickerResponse struct {
+	Volume TickerVolume    `json:"volume"`
 	Bid    decimal.Decimal `json:"bid"`
 	Ask    decimal.Decimal `json:"ask"`
 	Last   decimal.Decimal `json:"last"`
-	Volume TickerVolume    `json:"volume"`
 }
 
 type TickerVolume struct {
@@ -91,9 +91,9 @@ type TickerV2Response struct {
 	High    decimal.Decimal   `json:"high"`
 	Low     decimal.Decimal   `json:"low"`
 	Close   decimal.Decimal   `json:"close"`
-	Changes []decimal.Decimal `json:"changes"`
 	Bid     decimal.Decimal   `json:"bid"`
 	Ask     decimal.Decimal   `json:"ask"`
+	Changes []decimal.Decimal `json:"changes"`
 }
 
 type PriceFeedResponse []PriceFeedData
@@ -105,22 +105,22 @@ type PriceFeedData struct {
 }
 
 type WebsocketResponse struct {
-	Type           string    `json:"type"`
-	EventId        int64     `json:"eventId"`
 	Timestamp      time.Time `json:"timestamp"`
 	TimestampMs    time.Time `json:"timestampms"`
+	Type           string    `json:"type"`
+	EventId        int64     `json:"eventId"`
 	SocketSequence int64     `json:"socket_sequence"`
 }
 
 type SubscribeTradesResponse struct {
-	WebsocketResponse
 	Events []TradeEvent `json:"events"`
+	WebsocketResponse
 }
 
 type TradeEvent struct {
 	Type      string          `json:"type"`
-	Tid       int64           `json:"tid"`
 	Price     decimal.Decimal `json:"price"`
 	Amount    decimal.Decimal `json:"amount"`
 	MakerSide string          `json:"makerSide"`
+	Tid       int64           `json:"tid"`
 }

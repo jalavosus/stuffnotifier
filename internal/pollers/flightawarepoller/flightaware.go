@@ -14,10 +14,10 @@ const (
 )
 
 type Poller struct {
+	datastore datastore.Datastore[CacheEntry]
 	*poller.BasePoller
-	flightawareConfig flightaware.Config
-	datastore         datastore.Datastore[CacheEntry]
 	flightawareClient *flightaware.Client
+	flightawareConfig flightaware.Config
 }
 
 func NewFlightAwarePoller(conf poller.Config, flightawareConf *flightaware.Config) (*Poller, error) {

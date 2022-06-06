@@ -16,9 +16,9 @@ const (
 )
 
 type SendSMSResponse struct {
-	Success       bool
 	TimeSent      time.Time
 	MessageSid    string
 	MessageStatus MessageSendStatus
 	MessageError  string
+	Success       bool
 }

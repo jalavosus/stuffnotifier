@@ -113,6 +113,7 @@ func (p *Poller) setCacheEntry(
 	defer cancel()
 
 	cacheData := p.buildCacheEntry(flightData, origin, dest, notificationsSent)
+
 	return p.Datastore().Insert(ctx, cacheKey, cacheData)
 }
 

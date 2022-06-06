@@ -11,9 +11,9 @@ type Singleton[T, U any] interface {
 }
 
 type BaseInstance[T, U any] struct {
-	once       sync.Once
 	initFn     func() error
 	initConfFn func(conf U) error
+	once       sync.Once
 }
 
 func NewBaseInstance[T, U any](initFn func() error, initConfFn func(conf U) error) *BaseInstance[T, U] {

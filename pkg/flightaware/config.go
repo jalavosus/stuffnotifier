@@ -41,32 +41,14 @@ func DefaultConfig() Config {
 // NotificationsConfig contains configuration data respective to
 // which notifications will be sent for certain flight events.
 type NotificationsConfig struct {
-	// If true, a notification will be sent when the tracked flight
-	// departs from its origin gate.
-	// Default: true
-	GateDeparture bool `json:"gate_departure" yaml:"gate_departure" toml:"GateDeparture"`
-	// If true, a notification will be sent when the tracked flight takes off
-	// from its origin airport.
-	// Default: true
-	Takeoff bool `json:"takeoff" yaml:"takeoff" toml:"Takeoff"`
-	// If true, a notification will be sent when the tracked flight
-	// lands at its detination airport.
-	// Default: true
-	Landing bool `json:"landing" yaml:"landing" toml:"Landing"`
-	// If true, a notification will be sent when the tracked flight
-	// arrives at its destination gate.
-	// Default: true
-	GateArrival bool `json:"gate_arrival" yaml:"gate_arrival" toml:"GateArrival"`
-	// If true, a notification will be sent containing baggage claim information
-	// at the destination airport.
-	// Default: false
-	BaggageClaim bool `json:"baggage_claim" yaml:"baggage_claim" toml:"BaggageClaim"`
-	// Configuration for pre-arrival notifications
-	PreArrival   PreEventConfig `json:"pre_arrival" yaml:"pre_arrival" toml:"PreArrival"`
-	PreDeparture PreEventConfig `json:"pre_departure" yaml:"pre_departure" toml:"PreDeparture"`
-	// If true, timestamps are formatted using the timezone respective to the location of the aircraft.
-	// Default: true
-	UseLocalTime bool `json:"use_local_time" yaml:"use_local_time" toml:"UseLocalTime"`
+	PreDeparture  PreEventConfig `json:"pre_departure" yaml:"pre_departure" toml:"PreDeparture"`
+	PreArrival    PreEventConfig `json:"pre_arrival" yaml:"pre_arrival" toml:"PreArrival"`
+	Takeoff       bool           `json:"takeoff" yaml:"takeoff" toml:"Takeoff"`
+	Landing       bool           `json:"landing" yaml:"landing" toml:"Landing"`
+	GateArrival   bool           `json:"gate_arrival" yaml:"gate_arrival" toml:"GateArrival"`
+	BaggageClaim  bool           `json:"baggage_claim" yaml:"baggage_claim" toml:"BaggageClaim"`
+	GateDeparture bool           `json:"gate_departure" yaml:"gate_departure" toml:"GateDeparture"`
+	UseLocalTime  bool           `json:"use_local_time" yaml:"use_local_time" toml:"UseLocalTime"`
 }
 
 // PreEventConfig contains configuration details

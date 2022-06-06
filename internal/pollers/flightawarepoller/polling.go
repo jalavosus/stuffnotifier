@@ -42,6 +42,7 @@ func (p *Poller) Start(ctx context.Context, flightId string, flightIdType flight
 	return <-concurrentParams.ErrCh
 }
 
+//nolint:gocognit
 func (p *Poller) pollFlightData(
 	ctx context.Context,
 	flightId string,

@@ -19,8 +19,8 @@ const (
 
 type redisDatastore[T any] struct {
 	client       *redis.Client
-	clientConfig redisDatastoreConfig
 	config       datastoreConfig
+	clientConfig redisDatastoreConfig
 }
 
 type RedisDatastoreConfig struct {
@@ -59,9 +59,9 @@ func (c *RedisDatastoreConfig) toInternalConfig() redisDatastoreConfig {
 
 type redisDatastoreConfig struct {
 	Host       string
-	Port       int
 	Password   string
 	Prefix     string
+	Port       int
 	DefaultTtl time.Duration
 }
 

@@ -28,8 +28,7 @@ func loadFlightAwareConfig(c *cli.Context) (*flightaware.Config, error) {
 func loadConfigFromFlag[T any](c *cli.Context, flag cli.PathFlag, loadConf func(string) (T, error)) (*T, error) {
 	var conf *T
 
-	confPath := flag.Get(c)
-	if confPath != "" {
+	if confPath := flag.Get(c); confPath != "" {
 		tryConf, confErr := loadConf(confPath)
 		if confErr != nil {
 			return nil, confErr

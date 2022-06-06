@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
+	Auth            *AuthConfig `json:"auth,omitempty" yaml:"auth,omitempty" toml:"Auth,omitempty"`
 	SenderNumber    string      `json:"sender_number" yaml:"sender_number" toml:"SenderNumber"`
 	RecipientNumber string      `json:"recipient_number" yaml:"recipient_number" toml:"RecipientNumber"`
-	Auth            *AuthConfig `json:"auth,omitempty" yaml:"auth,omitempty" toml:"Auth,omitempty"`
 }
 
 type AuthConfig struct {

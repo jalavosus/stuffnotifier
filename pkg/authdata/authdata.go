@@ -49,9 +49,9 @@ func (a authData) Secret() string {
 
 type serviceAuthData struct {
 	host     string
-	port     int
 	username string
 	password string
+	port     int
 }
 
 func NewServiceAuthData(host string, port int, username, password string) ServiceAuthData {

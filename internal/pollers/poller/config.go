@@ -18,14 +18,14 @@ import (
 )
 
 type Config struct {
-	PollInterval time.Duration       `json:"poll_interval" yaml:"poll_interval" toml:"PollInterval"`
-	LogStdout    bool                `json:"log_stdout" yaml:"log_stdout" toml:"LogStdout"`
+	Slack        *slack.Config       `json:"slack,omitempty" yaml:"slack,omitempty" toml:"Slack,omitempty"`
+	Cache        *datastore.Config   `json:"cache,omitempty" yaml:"cache,omitempty" toml:"Cache,omitempty"`
 	Gemini       *gemini.Config      `json:"gemini,omitempty" yaml:"gemini,omitempty" toml:"Gemini,omitempty"`
 	FlightAware  *flightaware.Config `json:"flightaware,omitempty" yaml:"flightaware,omitempty" toml:"FlightAware,omitempty"`
 	Twilio       *twilio.Config      `json:"twilio,omitempty" yaml:"twilio,omitempty" toml:"Twilio,omitempty"`
 	Discord      *discord.Config     `json:"discord,omitempty" yaml:"discord,omitempty" toml:"Discord,omitempty"`
-	Slack        *slack.Config       `json:"slack,omitempty" yaml:"slack,omitempty" toml:"Slack,omitempty"`
-	Cache        *datastore.Config   `json:"cache,omitempty" yaml:"cache,omitempty" toml:"Cache,omitempty"`
+	PollInterval time.Duration       `json:"poll_interval" yaml:"poll_interval" toml:"PollInterval"`
+	LogStdout    bool                `json:"log_stdout" yaml:"log_stdout" toml:"LogStdout"`
 }
 
 // LoadConfig reads configuration data from the file at the passed path

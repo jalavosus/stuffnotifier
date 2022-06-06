@@ -31,75 +31,37 @@ type FlightDataResponse struct {
 }
 
 type FlightData struct {
-	Identifier FlightIdentifier
-	Operator   FlightOperator
-	// Unique identifier assigned by FlightAware for this specific flight.
-	// If the flight is diverted, the new leg of the flight will have a different FlightId
-	FlightId string
-	// Bare flight number of the flight (ex. 2614)
-	FlightNumber string
-	// Aircraft registration (tail number) of the aircraft, when known
-	Registration string
-	// The identifier of the flight for Air Traffic Control purposes, when known and different than Identifier
-	AtcIdent string
-	// Unique identifier assigned by FlightAware for the previous flight of the aircraft serving this flight
-	InboundFlightId string
-	// List of any ICAO codeshares operating on this flight
-	Codeshares []string
-	// List of any IATA codeshares operating on this flight
-	CodesharesIata []string
-	// Indicates whether this flight is blocked from public viewing
-	Blocked bool
-	// Indicates whether this flight was diverted
-	Diverted bool
-	// Indicates that the flight is no longer being tracked by FlightAware.
-	// There are a number of reasons this could happen including cancellation by the airline,
-	// but that will not always be the case
-	Cancelled bool
-	// Indicates whether this flight has a flight plan, schedule, or other indication of intent available
-	PositionOnly bool
-	// Information for this flight's origin airport
-	Origin FlightOriginDestinationData
-	// Information for this flight's destination airport
-	Destination FlightOriginDestinationData
-	// Departure delay (in seconds) based on either actual or estimated gate departure time.
-	// If gate time is unavailable then based on runway departure time.
-	// A negative value indicates the flight has departed early
-	DepartureDelay time.Duration
-	// Arrival delay (in seconds) based on either actual or estimated gate arrival time.
-	// If gate time is unavailable then based on runway arrival time.
-	// A negative value indicates the flight has arrived early
-	ArrivalDelay time.Duration
-	// Runway-to-runway filed flight duration (in seconds)
-	FlightTime time.Duration
-	// Scheduled, estimated, and actual departure time from origin gate
-	GateDepartureTime FlightTimestamp
-	// Scheduled, estimated, and actual takeoff time from origin airport
+	GateArrivalTime     FlightTimestamp
+	GateDepartureTime   FlightTimestamp
 	RunwayDepartureTime FlightTimestamp
-	// Scheduled, estimated, and actual landing time at destination airport
-	RunwayArrivalTime FlightTimestamp
-	// Scheduled, estimated, and actual arrival time at destination airport gate
-	GateArrivalTime FlightTimestamp
-	// The percent completion of a flight, based on runway departure/arrival.
-	// Null for en route position-only flights
-	FlightProgress int
-	// Human-readable summary of flight status
-	Status string
-	// Aircraft type will generally be ICAO code, but IATA code will be given when the ICAO code is not known
-	AircraftType string
-	// Planned flight distance (in statute miles) based on the filed route.
-	// May vary from actual flown distance
-	RouteDistance int64
-	// Filed IFR airspeed (in knots)
-	FiledAirspeed int64
-	// Filed IFR altitude (in 100s of feet)
-	FiledAltitude int64
-	// The textual description of the flight's route
-	Route string
-	// The textual description of the flight's route, split by waypoint
-	RouteWaypoints []string
-	// Whether this is a commercial or general aviation flight
-	FlightType FlightType
+	RunwayArrivalTime   FlightTimestamp
+	Origin              FlightOriginDestinationData
+	Destination         FlightOriginDestinationData
+	Operator            FlightOperator
+	Identifier          FlightIdentifier
+	InboundFlightId     string
+	FlightNumber        string
+	Route               string
+	FlightId            string
+	AircraftType        string
+	AtcIdent            string
+	Registration        string
+	Status              string
+	RouteWaypoints      []string
+	CodesharesIata      []string
+	Codeshares          []string
+	ArrivalDelay        time.Duration
+	FlightTime          time.Duration
+	FiledAltitude       int64
+	FlightProgress      int
+	FiledAirspeed       int64
+	DepartureDelay      time.Duration
+	RouteDistance       int64
+	PositionOnly        bool
+	Cancelled           bool
+	Diverted            bool
+	Blocked             bool
+	FlightType          FlightType
 }
 
 func (d *FlightData) UnmarshalJSON(data []byte) error {
@@ -138,16 +100,16 @@ func (d *FlightData) UnmarshalJSON(data []byte) error {
 	}
 
 	if raw.AtcIdent != nil {
-		(*d).AtcIdent = *raw.AtcIdent
+		d.AtcIdent = *raw.AtcIdent
 	}
 	if raw.RouteDistance != nil {
-		(*d).RouteDistance = *raw.RouteDistance
+		d.RouteDistance = *raw.RouteDistance
 	}
 	if raw.FiledAirspeed != nil {
-		(*d).FiledAirspeed = *raw.FiledAirspeed
+		d.FiledAirspeed = *raw.FiledAirspeed
 	}
 	if raw.FiledAltitude != nil {
-		(*d).FiledAltitude = *raw.FiledAltitude
+		d.FiledAltitude = *raw.FiledAltitude
 	}
 
 	return nil
@@ -266,52 +228,52 @@ const (
 )
 
 type rawFlightData struct {
-	Ident               string                         `json:"ident"`
-	IdentIcao           string                         `json:"ident_icao"`
-	IdentIata           string                         `json:"ident_iata"`
-	FaFlightId          string                         `json:"fa_flight_id"`
-	Operator            string                         `json:"operator"`
-	OperatorIcao        string                         `json:"operator_icao"`
-	OperatorIata        string                         `json:"operator_iata"`
-	FlightNumber        string                         `json:"flight_number"`
-	Registration        string                         `json:"registration"`
+	TerminalDestination *string                        `json:"terminal_destination,omitempty"`
+	EstimatedIn         *string                        `json:"estimated_in,omitempty"`
+	ScheduledIn         *string                        `json:"scheduled_in,omitempty"`
+	ActualOn            *string                        `json:"actual_on,omitempty"`
+	EstimatedOn         *string                        `json:"estimated_on,omitempty"`
+	ActualIn            *string                        `json:"actual_in,omitempty"`
+	ActualOff           *string                        `json:"actual_off,omitempty"`
+	EstimatedOff        *string                        `json:"estimated_off,omitempty"`
+	ScheduledOff        *string                        `json:"scheduled_off,omitempty"`
 	AtcIdent            *string                        `json:"atc_ident,omitempty"`
-	InboundFaFlightId   string                         `json:"inbound_fa_flight_id"`
-	Codeshares          []string                       `json:"codeshares"`
-	CodesharesIata      []string                       `json:"codeshares_iata"`
-	Blocked             bool                           `json:"blocked"`
-	Diverted            bool                           `json:"diverted"`
-	Cancelled           bool                           `json:"cancelled"`
-	PositionOnly        bool                           `json:"position_only"`
-	Origin              rawFlightOriginDestinationData `json:"origin"`
-	Destination         rawFlightOriginDestinationData `json:"destination"`
-	DepartureDelay      int64                          `json:"departure_delay"`
-	ArrivalDelay        int64                          `json:"arrival_delay"`
-	FlightEte           int64                          `json:"flight_ete"`
+	ActualOut           *string                        `json:"actual_out,omitempty"`
+	ScheduledOn         *string                        `json:"scheduled_on,omitempty"`
+	FiledAltitude       *int64                         `json:"filed_altitude,omitempty"`
+	FiledAirspeed       *int64                         `json:"filed_airspeed,omitempty"`
+	RouteDistance       *int64                         `json:"route_distance,omitempty"`
+	GateDestination     *string                        `json:"gate_destination,omitempty"`
 	ScheduledOut        *string                        `json:"scheduled_out,omitempty"`
 	EstimatedOut        *string                        `json:"estimated_out,omitempty"`
-	ActualOut           *string                        `json:"actual_out,omitempty"`
-	ScheduledOff        *string                        `json:"scheduled_off,omitempty"`
-	EstimatedOff        *string                        `json:"estimated_off,omitempty"`
-	ActualOff           *string                        `json:"actual_off,omitempty"`
-	ScheduledOn         *string                        `json:"scheduled_on,omitempty"`
-	EstimatedOn         *string                        `json:"estimated_on,omitempty"`
-	ActualOn            *string                        `json:"actual_on,omitempty"`
-	ScheduledIn         *string                        `json:"scheduled_in,omitempty"`
-	EstimatedIn         *string                        `json:"estimated_in,omitempty"`
-	ActualIn            *string                        `json:"actual_in,omitempty"`
-	GateOrigin          string                         `json:"gate_origin"`
-	GateDestination     *string                        `json:"gate_destination,omitempty"`
+	Destination         rawFlightOriginDestinationData `json:"destination"`
+	Origin              rawFlightOriginDestinationData `json:"origin"`
 	TerminalOrigin      string                         `json:"terminal_origin"`
-	TerminalDestination *string                        `json:"terminal_destination,omitempty"`
-	FlightProgress      int                            `json:"flight_progress"`
-	Status              string                         `json:"status"`
-	AircraftType        string                         `json:"aircraft_type"`
-	RouteDistance       *int64                         `json:"route_distance,omitempty"`
-	FiledAirspeed       *int64                         `json:"filed_airspeed,omitempty"`
-	FiledAltitude       *int64                         `json:"filed_altitude,omitempty"`
-	Route               string                         `json:"route"`
 	Type                string                         `json:"type"`
+	Status              string                         `json:"status"`
+	Route               string                         `json:"route"`
+	InboundFaFlightId   string                         `json:"inbound_fa_flight_id"`
+	Registration        string                         `json:"registration"`
+	FlightNumber        string                         `json:"flight_number"`
+	OperatorIata        string                         `json:"operator_iata"`
+	OperatorIcao        string                         `json:"operator_icao"`
+	Operator            string                         `json:"operator"`
+	FaFlightId          string                         `json:"fa_flight_id"`
+	IdentIata           string                         `json:"ident_iata"`
+	IdentIcao           string                         `json:"ident_icao"`
+	GateOrigin          string                         `json:"gate_origin"`
+	Ident               string                         `json:"ident"`
+	AircraftType        string                         `json:"aircraft_type"`
+	CodesharesIata      []string                       `json:"codeshares_iata"`
+	Codeshares          []string                       `json:"codeshares"`
+	FlightEte           int64                          `json:"flight_ete"`
+	ArrivalDelay        int64                          `json:"arrival_delay"`
+	DepartureDelay      int64                          `json:"departure_delay"`
+	FlightProgress      int                            `json:"flight_progress"`
+	Cancelled           bool                           `json:"cancelled"`
+	Diverted            bool                           `json:"diverted"`
+	Blocked             bool                           `json:"blocked"`
+	PositionOnly        bool                           `json:"position_only"`
 }
 
 func (d rawFlightData) FlightIdentifier() FlightIdentifier {
@@ -389,28 +351,16 @@ func (d rawFlightOriginDestinationData) FlightOriginDestinationData() FlightOrig
 }
 
 type AirportData struct {
-	// IATA, ICAO, and LID identifier codes for the airport
 	Identifiers AirportIdentifiers
-	// Common name for the airport
-	Name string
-	// Type of airport
-	AirportType AirportType
-	// Height above Mean Sea Level (MSL) (in feet)
-	Elevation int64
-	// Closest city to this airport
-	City string
-	// State/province where the airport resides if applicable.
-	// For US states this will be their 2-letter code;
-	// for provinces or other entities, it will be the full name
-	State string
-	// Airport's latitude, generally the center point of the airport
-	Latitude float64
-	// Airport's longitude, generally the center point of the airport
-	Longitude float64
-	// Applicable timezone for the airport, in the TZ database format
-	Timezone string
-	// 2-letter code of country where the airport resides (ISO 3166-1 alpha-2)
+	Name        string
+	Timezone    string
 	CountryCode string
+	City        string
+	State       string
+	Latitude    float64
+	Longitude   float64
+	Elevation   int64
+	AirportType AirportType
 }
 
 func (d *AirportData) UnmarshalJSON(data []byte) error {
@@ -436,19 +386,19 @@ func (d *AirportData) UnmarshalJSON(data []byte) error {
 }
 
 type rawAirportData struct {
-	AirportCode string  `json:"airport_code"`
+	CountryCode string  `json:"country_code"`
 	CodeIcao    string  `json:"code_icao"`
 	CodeIata    string  `json:"code_iata"`
 	CodeLid     string  `json:"code_lid"`
 	Name        string  `json:"name"`
 	Type        string  `json:"type,omitempty"`
-	Elevation   int64   `json:"elevation"`
+	AirportCode string  `json:"airport_code"`
 	City        string  `json:"city"`
 	State       string  `json:"state"`
-	Latitude    float64 `json:"latitude"`
-	Longitude   float64 `json:"longitude"`
 	Timezone    string  `json:"timezone"`
-	CountryCode string  `json:"country_code"`
+	Longitude   float64 `json:"longitude"`
+	Latitude    float64 `json:"latitude"`
+	Elevation   int64   `json:"elevation"`
 }
 
 func (d rawAirportData) AirportIdentifiers() AirportIdentifiers {

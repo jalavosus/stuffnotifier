@@ -14,23 +14,23 @@ const timeFormat string = "2006-01-02 15:04:05 (-0700)"
 
 func TestFlightAwareDepartureAlert_FormatPlaintext(t *testing.T) {
 	type fields struct {
-		IsGateDeparture      bool
-		IsTakeoff            bool
-		UseLocalTimezone     bool
-		FlightNumber         string
-		GateNumber           string
-		OriginAirport        string
+		EstimatedLandingTime time.Time
+		TakeoffTime          time.Time
+		EstimatedTakeoffTime time.Time
+		GateDepartureTime    time.Time
 		DestinationAirport   string
+		OriginAirport        string
+		GateNumber           string
 		OriginTimezone       string
 		DestinationTimezone  string
-		GateDepartureTime    time.Time
-		EstimatedTakeoffTime time.Time
-		TakeoffTime          time.Time
-		EstimatedLandingTime time.Time
+		FlightNumber         string
+		UseLocalTimezone     bool
+		IsTakeoff            bool
+		IsGateDeparture      bool
 	}
 	tests := []struct {
-		name   string
 		fields fields
+		name   string
 	}{
 		{
 			name: "test takeoff/local timezone",

@@ -53,9 +53,9 @@ func TestLoadConfig(t *testing.T) {
 	)
 
 	tests := []struct {
+		wantConf *flightaware.Config
 		name     string
 		args     args
-		wantConf *flightaware.Config
 		wantErr  bool
 	}{
 		{
