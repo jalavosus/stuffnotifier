@@ -47,7 +47,7 @@ func AppendSlices[T any](slices ...[]T) []T {
 
 			copy(newSlice2, newSlice)
 			copy(newSlice2[len(newSlice):], s)
-			
+
 			newSlice = newSlice2
 		}
 	}
