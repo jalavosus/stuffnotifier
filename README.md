@@ -22,6 +22,7 @@ Mapping of keys to environment variables:
 |  Twilio API Secret  | Twilio API secret                          |  `TWILIO_API_SECRET`  |    None     |
 |  Twilio Auth Token  | Twilio API Auth token                      |  `TWILIO_API_TOKEN`   |    None     |
 |       Discord       | Discord Bot Token                          |    `DISCORD_TOKEN`    |    None     |
+|     Slack Token     | Slack Bot token                            |     `SLACK_TOKEN`     |    None     |
 |   Redis Hostname    | Hostname of Redis instance/cluster         |     `REDIS_HOST`      | `localhost` |
 |     Redis Port      | Port number of Redis instance/cluster      |     `REDIS_PORT`      |   `6379`    |
 |   Redis password    | Password for Redis instance authentication |   `REDIS_PASSWORD`    |    `""`     |
@@ -30,19 +31,21 @@ Mapping of keys to environment variables:
 
 - [x] CLI
 - [x] SMS
-- [ ] Discord
+- [ ] Discord 
+- [ ] Slack (**WIP**)
 - [ ] Email
 - [ ] [Avian Carrier](https://datatracker.ietf.org/doc/html/rfc1149)
 
 ## TODO
 
 - [ ] CLI (sorta done)
-- [ ] Gemini
+- [x] Gemini
   - [x] Rest API integration
-  - [ ] Websocket API integration
+  - [ ] ~~Websocket API integration~~
 - [x] FlightAware integration (Flights, Airports)
 - [ ] Discord integration
 - [x] Twilio integration
+- [x] Slack integration (**Untested**)
 - [ ] Email integration
 - [ ] REST API service
 - [ ] Documentation
