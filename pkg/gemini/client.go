@@ -7,8 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
-	"github.com/stoicturtle/stuffnotifier/internal/authdata/env"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
+
+	"github.com/stoicturtle/stuffnotifier/internal/env"
 	"github.com/stoicturtle/stuffnotifier/internal/utils"
 	"github.com/stoicturtle/stuffnotifier/pkg/errs"
 )

@@ -8,7 +8,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
 )
 

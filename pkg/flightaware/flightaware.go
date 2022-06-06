@@ -3,7 +3,7 @@ package flightaware
 import (
 	"context"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 )
 
 const (

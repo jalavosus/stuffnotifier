@@ -3,9 +3,9 @@ package flightawarepoller
 import (
 	"time"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
 	"github.com/stoicturtle/stuffnotifier/internal/datastore"
 	"github.com/stoicturtle/stuffnotifier/internal/pollers/poller"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
 )
 

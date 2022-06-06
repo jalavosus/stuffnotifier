@@ -6,10 +6,10 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
 	"github.com/stoicturtle/stuffnotifier/internal/messages"
 	"github.com/stoicturtle/stuffnotifier/internal/pollers/poller"
 	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 	"github.com/stoicturtle/stuffnotifier/pkg/flightaware"
 )
 

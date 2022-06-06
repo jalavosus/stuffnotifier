@@ -4,8 +4,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/twilio/twilio-go"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
-	"github.com/stoicturtle/stuffnotifier/internal/authdata/env"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
+
+	"github.com/stoicturtle/stuffnotifier/internal/env"
 	"github.com/stoicturtle/stuffnotifier/pkg/singleton"
 )
 

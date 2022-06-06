@@ -9,8 +9,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
 	"github.com/stoicturtle/stuffnotifier/internal/utils"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 	"github.com/stoicturtle/stuffnotifier/pkg/errs"
 )
 

@@ -3,7 +3,7 @@ package gemini
 import (
 	"context"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 )
 
 func Symbols(ctx context.Context, authData authdata.AuthData) (*SymbolsResponse, error) {

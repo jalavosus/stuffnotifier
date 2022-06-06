@@ -6,8 +6,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/slack-go/slack"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
 	"github.com/stoicturtle/stuffnotifier/internal/messages"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 )
 
 // Client is a wrapper around the slack-go/slack

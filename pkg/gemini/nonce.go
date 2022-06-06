@@ -10,8 +10,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/stoicturtle/stuffnotifier/internal/authdata"
 	"github.com/stoicturtle/stuffnotifier/internal/nonceticker"
+	"github.com/stoicturtle/stuffnotifier/pkg/authdata"
 )
 
 type NoncePayload struct {
