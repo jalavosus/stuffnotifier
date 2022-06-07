@@ -20,7 +20,7 @@ $(GO) build -o $1 $2
 endef
 
 define _fieldalign
-@fieldalignment $(strip $2) $1
+fieldalignment $(strip $1) $2
 endef
 
 all : clean build
@@ -37,10 +37,10 @@ lint :
 	@golangci-lint run --config=.golangci.yml
 
 fieldalign :
-	$(call _fieldalign,$(FILES))
+	$(call _fieldalign,,$(FILES))
 
 fieldalign-fix :
-	$(call _fieldalign,$(FILES),-fix)
+	$(call _fieldalign,-fix,$(FILES))
 
 fmt :
 	gofmt -s -w ./
