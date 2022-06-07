@@ -17,6 +17,7 @@ const (
 	configFlagName      string = "config"
 	twilioFlagName      string = "twilio"
 	discordFlagName     string = "discord"
+	slackFlagName       string = "slack"
 	geminiFlagName      string = "gemini"
 	flightAwareFlagName string = "flightaware"
 )
@@ -59,6 +60,7 @@ var (
 	flightawareConfigFlag = makeConfigFlag(flightAwareFlagName)
 	twilioConfigFlag      = makeConfigFlag(twilioFlagName)
 	discordConfigFlag     = makeConfigFlag(discordFlagName)
+	slackConfigFlag       = makeConfigFlag(slackFlagName)
 )
 
 var (

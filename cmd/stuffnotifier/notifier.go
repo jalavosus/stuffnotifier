@@ -11,8 +11,9 @@ import (
 	"github.com/urfave/cli/v2"
 
 	fapoller "github.com/jalavosus/stuffnotifier/internal/pollers/flightawarepoller"
-	"github.com/jalavosus/stuffnotifier/internal/pollers/poller"
+	"github.com/jalavosus/stuffnotifier/internal/pollers/geminipoller"
 	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
+	"github.com/jalavosus/stuffnotifier/pkg/gemini"
 )
 
 var (
@@ -20,9 +21,9 @@ var (
 		Name:        "gemini",
 		Description: "Monitor crypto prices via Gemini",
 		Usage:       "stuffnotifier monitor gemini [stuff]",
-		ArgsUsage:   "",
-		Action:      nil,
+		Action:      geminiCmdAction,
 		Flags: []cli.Flag{
+			&pollerConfigFlag,
 			&geminiConfigFlag,
 			&geminiApiKeyFlag,
 			&geminiApiSecret,
@@ -41,6 +42,38 @@ var (
 		},
 	}
 )
+
+func geminiCmdAction(c *cli.Context) error {
+	var (
+		geminiConfig *gemini.Config
+		pollInterval = gemini.DefaultPollInterval
+	)
+
+	config := loadBuildPollerConfig(c)
+
+	if config.Gemini == nil {
+		geminiConf, confErr := loadGeminiConfig(c)
+		if confErr != nil {
+			logger.Warn("error loading Gemini config", zap.Error(confErr))
+		} else if geminiConf != nil {
+			config.Gemini = geminiConf
+			geminiConfig = geminiConf
+			pollInterval = geminiConfig.PollInterval
+		}
+	} else {
+		geminiConfig = config.Gemini
+		pollInterval = geminiConfig.PollInterval
+	}
+
+	config.PollInterval = pollInterval
+
+	poller, err := geminipoller.NewPoller(config, geminiConfig)
+	if err != nil {
+		return err
+	}
+
+	return poller.Start(c.Context)
+}
 
 func flightawareCmdAction(c *cli.Context) error {
 	if c.Args().Len() < 2 {
@@ -63,38 +96,10 @@ func flightawareCmdAction(c *cli.Context) error {
 
 	var (
 		pollInterval time.Duration
-		config       poller.Config
 		faConfig     *flightaware.Config
 	)
 
-	pollerConfig, confErr := loadPollerConfig(c)
-	if confErr != nil {
-		logger.Warn("error loading Poller config", zap.Error(confErr))
-	} else {
-		if pollerConfig != nil {
-			config = *pollerConfig
-		} else {
-			config = poller.Config{}
-		}
-	}
-
-	if config.Twilio == nil {
-		twilioConf, confErr := loadTwilioConfig(c)
-		if confErr != nil {
-			logger.Warn("error loading Twilio config", zap.Error(confErr))
-		} else if twilioConf != nil {
-			config.Twilio = twilioConf
-		}
-	}
-
-	if config.Discord == nil {
-		discordConf, confErr := loadDiscordConfig(c)
-		if confErr != nil {
-			logger.Warn("error loading Discord config", zap.Error(confErr))
-		} else if discordConf != nil {
-			config.Discord = discordConf
-		}
-	}
+	config := loadBuildPollerConfig(c)
 
 	if config.FlightAware == nil {
 		faConf, confErr := loadFlightAwareConfig(c)
@@ -112,7 +117,7 @@ func flightawareCmdAction(c *cli.Context) error {
 
 	config.PollInterval = pollInterval
 
-	faPoller, err := fapoller.NewFlightAwarePoller(config, faConfig)
+	faPoller, err := fapoller.NewPoller(config, faConfig)
 	if err != nil {
 		return err
 	}
