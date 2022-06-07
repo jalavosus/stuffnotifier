@@ -70,8 +70,8 @@ func TestSymbolDetails(t *testing.T) {
 		TestCase
 	}{
 		{
-			ethBtcTestCase,
-			detailsWant{
+			TestCase: ethBtcTestCase,
+			want: detailsWant{
 				symbol: "ETHBTC",
 				base:   "ETH",
 				quote:  "BTC",
@@ -79,13 +79,13 @@ func TestSymbolDetails(t *testing.T) {
 			},
 		},
 		{
-			TestCase{
+			TestCase: TestCase{
 				name:    "ETHBTC (valid-badstatus)",
 				symbol:  "ETHBTC",
 				wantErr: false,
 				valid:   true,
 			},
-			detailsWant{
+			want: detailsWant{
 				symbol: "ETHBTC",
 				base:   "ETH",
 				quote:  "BTC",
@@ -102,8 +102,8 @@ func TestSymbolDetails(t *testing.T) {
 		// 	},
 		// },
 		{
-			ustFraxTestCase,
-			detailsWant{
+			TestCase: ustFraxTestCase,
+			want: detailsWant{
 				symbol: "USTFRAX",
 				base:   "UST",
 				quote:  "FRAX",
@@ -170,16 +170,16 @@ func TestTicker(t *testing.T) {
 		TestCase
 	}{
 		{
-			ethBtcTestCase,
-			args{"ETHBTC", "ETH", "BTC"},
+			TestCase: ethBtcTestCase,
+			args:     args{"ETHBTC", "ETH", "BTC"},
 		},
 		// {
 		// 	ustUsdTestCase,
 		// 	args{"USTUSD", "UST", "USD"},
 		// },
 		{
-			ustFraxTestCase,
-			args{"USTFRAX", "UST", "FRAX"},
+			TestCase: ustFraxTestCase,
+			args:     args{"USTFRAX", "UST", "FRAX"},
 		},
 	}
 
