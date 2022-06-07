@@ -2,12 +2,12 @@ package geminipoller
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 
+	"github.com/jalavosus/stuffnotifier/internal/datastore"
 	"github.com/jalavosus/stuffnotifier/internal/messages"
 	"github.com/jalavosus/stuffnotifier/internal/pollers/poller"
 	"github.com/jalavosus/stuffnotifier/pkg/authdata"
@@ -15,24 +15,57 @@ import (
 )
 
 type Poller struct {
+	datastore datastore.Datastore[CacheEntry]
 	*poller.BasePoller
 	geminiConfig gemini.Config
 	geminiClient *gemini.Client
 }
 
-func (p Poller) GeminiConfig() gemini.Config {
+func NewPoller(conf poller.Config, geminiConfig *gemini.Config) (*Poller, error) {
+	var (
+		geminiConf   = gemini.DefaultConfig()
+		datastoreErr error
+	)
+
+	switch {
+	case conf.Gemini != nil:
+		geminiConf = conf.Gemini
+	case geminiConfig != nil:
+		geminiConf = geminiConfig
+	}
+
+	p := &Poller{
+		BasePoller:   poller.NewBasePoller(conf),
+		geminiConfig: *geminiConf,
+	}
+
+	p.SetPollInterval(geminiConf.PollInterval)
+
+	p.datastore, datastoreErr = datastore.NewDatastore[CacheEntry](conf.Cache)
+	if datastoreErr != nil {
+		return nil, datastoreErr
+	}
+
+	return p, nil
+}
+
+func (p *Poller) GeminiConfig() gemini.Config {
 	return p.geminiConfig
 }
 
-func (p Poller) GeminiClient() *gemini.Client {
+func (p *Poller) Datastore() datastore.Datastore[CacheEntry] {
+	return p.datastore
+}
+
+func (p *Poller) GeminiClient() *gemini.Client {
 	return p.geminiClient
 }
 
-func (p Poller) initGeminiClient(authData authdata.AuthData) {
+func (p *Poller) initGeminiClient(authData authdata.AuthData) {
 	p.geminiClient = gemini.NewClient(authData)
 }
 
-func (p *Poller) Start(ctx context.Context, baseCurrency, quoteCurrency string, baseAmt decimal.Decimal) error {
+func (p *Poller) Start(ctx context.Context) error {
 	var authData authdata.AuthData
 	if conf := p.GeminiConfig(); conf.Auth != nil {
 		authData = conf.Auth
@@ -47,38 +80,44 @@ func (p *Poller) Start(ctx context.Context, baseCurrency, quoteCurrency string, 
 
 	p.initGeminiClient(authData)
 
-	cacheKey := "gemini:" + baseCurrency + "-" + quoteCurrency + "-" + baseAmt.String()
-	concurrentParams := poller.NewConcurrentParams(authData, cacheKey)
+	errCh := make(chan error, 1)
 
-	go p.pollSpotPrices(
-		ctx,
-		baseCurrency,
-		quoteCurrency,
-		baseAmt,
-		concurrentParams,
-	)
+	for _, pollerConf := range p.GeminiConfig().Notifications.SpotPrice {
+		cacheKey := "gemini:" + pollerConf.CurrencySymbol()
+		concurrentParams := poller.NewConcurrentParamsWithChannel(authData, cacheKey, errCh)
 
-	return <-concurrentParams.ErrCh
+		go p.pollSpotPrices(
+			ctx,
+			pollerConf,
+			concurrentParams,
+		)
+	}
+
+	return <-errCh
 }
 
 func (p *Poller) pollSpotPrices(
 	ctx context.Context,
-	baseCurrency, quoteCurrency string,
-	baseAmt decimal.Decimal,
+	pollerConf gemini.SpotPriceNotificationsConfig,
 	pollerParams *poller.ConcurrentParams,
 ) {
 
-	symbol := strings.ToUpper(baseCurrency) + strings.ToUpper(quoteCurrency)
-	// symbolData, symbolDataErr := gemini.SymbolDetails(ctx, authData, symbol)
-	// if symbolDataErr != nil {
-	// 	ch <- symbolDataErr
-	// 	return
-	// }
+	symbol := pollerConf.CurrencySymbol()
+
+	baseCurrency := pollerConf.BaseCurrency
+	quoteCurrency := pollerConf.QuoteCurrency
+	baseAmt := pollerConf.BaseAmt()
 
 	ticker := time.NewTicker(p.PollInterval())
 	cleanup := func(err error) {
 		pollerParams.Cleanup(err, ticker)
 	}
+
+	p.LogInfo(
+		"starting gemini spot price poller",
+		zap.String("symbol", symbol),
+		zap.String("check_interval", p.PollInterval().String()),
+	)
 
 	for {
 		select {
@@ -92,9 +131,12 @@ func (p *Poller) pollSpotPrices(
 				continue
 			}
 
+			spotPrice = spotPrice.Mul(baseAmt)
+
 			msg := messages.SpotPriceAlert{
 				EventTime:     t,
 				SpotPrice:     spotPrice,
+				BaseAmount:    baseAmt,
 				BaseCurrency:  baseCurrency,
 				QuoteCurrency: quoteCurrency,
 			}
@@ -106,7 +148,7 @@ func (p *Poller) pollSpotPrices(
 	}
 }
 
-func (p Poller) fetchSpotPrice(ctx context.Context, symbol string) (decimal.Decimal, error) {
+func (p *Poller) fetchSpotPrice(ctx context.Context, symbol string) (decimal.Decimal, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 

@@ -12,6 +12,7 @@ type SpotPriceAlert struct {
 	baseMessage
 	EventTime     time.Time
 	SpotPrice     decimal.Decimal
+	BaseAmount    decimal.Decimal
 	BaseCurrency  string
 	QuoteCurrency string
 }

@@ -27,7 +27,7 @@ func mustParseTemplate(name, raw string) *template.Template {
 const (
 	rawSpotPriceAlertPlaintextTemplate = `Crypto Spot Price Alert!
 
-At {{ FormatTimeOffset .EventTime }}, {{ FormatPair .BaseCurrency .QuoteCurrency }} was {{ FormatPairQuote .BaseCurrency .QuoteCurrency 1.0 .SpotPrice }}.
+At {{ FormatTimeOffset .EventTime }}, {{ FormatPair .BaseCurrency .QuoteCurrency }} was {{ FormatPairQuote .BaseCurrency .QuoteCurrency .BaseAmount .SpotPrice }}.
 `
 	rawSpotPriceAlertMarkdownTemplate = ``
 )
