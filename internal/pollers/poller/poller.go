@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/rs/xid"
 	"go.uber.org/zap"
 
 	"github.com/jalavosus/stuffnotifier/internal/messages"
@@ -15,6 +16,7 @@ import (
 )
 
 type BasePoller struct {
+	pollerId     xid.ID
 	logger       *zap.Logger
 	config       Config
 	pollInterval time.Duration
@@ -22,6 +24,7 @@ type BasePoller struct {
 
 func NewBasePoller(conf Config) *BasePoller {
 	p := &BasePoller{
+		pollerId:     xid.NewWithTime(time.Now()),
 		pollInterval: DefaultPollInterval,
 		config:       conf,
 		logger:       newLogger(),
@@ -30,7 +33,15 @@ func NewBasePoller(conf Config) *BasePoller {
 	return p
 }
 
-func (p BasePoller) PollInterval() time.Duration {
+func (p *BasePoller) PollerId() string {
+	return p.pollerId.String()
+}
+
+func (p *BasePoller) PollerIdBytes() []byte {
+	return p.pollerId.Bytes()
+}
+
+func (p *BasePoller) PollInterval() time.Duration {
 	return p.pollInterval
 }
 
@@ -40,23 +51,23 @@ func (p *BasePoller) SetPollInterval(pollInterval time.Duration) *BasePoller {
 	return p
 }
 
-func (p BasePoller) LogStdout() bool {
+func (p *BasePoller) LogStdout() bool {
 	return p.config.LogStdout
 }
 
-func (p BasePoller) TwilioConfig() *twilio.Config {
+func (p *BasePoller) TwilioConfig() *twilio.Config {
 	return p.config.Twilio
 }
 
-func (p BasePoller) DiscordConfig() *discord.Config {
+func (p *BasePoller) DiscordConfig() *discord.Config {
 	return p.config.Discord
 }
 
-func (p BasePoller) SlackConfig() *slack.Config {
+func (p *BasePoller) SlackConfig() *slack.Config {
 	return p.config.Slack
 }
 
-func (p BasePoller) SendMessage(ctx context.Context, msg messages.Message) error {
+func (p *BasePoller) SendMessage(ctx context.Context, msg messages.Message) error {
 	if p.LogStdout() {
 		fmt.Println(msg.FormatPlaintext())
 	}
@@ -80,7 +91,7 @@ func (p BasePoller) SendMessage(ctx context.Context, msg messages.Message) error
 	return nil
 }
 
-func (p BasePoller) sendTwilio(ctx context.Context, msg messages.Message) error {
+func (p *BasePoller) sendTwilio(ctx context.Context, msg messages.Message) error {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
@@ -96,7 +107,7 @@ func (p BasePoller) sendTwilio(ctx context.Context, msg messages.Message) error 
 	return nil
 }
 
-func (p BasePoller) sendSlack(ctx context.Context, msg messages.Message) error {
+func (p *BasePoller) sendSlack(ctx context.Context, msg messages.Message) error {
 	slackConf := p.SlackConfig()
 
 	client, clientErr := slack.NewClient(slackConf)
@@ -115,7 +126,7 @@ func (p BasePoller) sendSlack(ctx context.Context, msg messages.Message) error {
 	return nil
 }
 
-func (p BasePoller) sendSlackMsg(ctx context.Context, msg messages.Message, recipientId string, client *slack.Client) error {
+func (p *BasePoller) sendSlackMsg(ctx context.Context, msg messages.Message, recipientId string, client *slack.Client) error {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 

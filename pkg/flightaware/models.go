@@ -39,7 +39,7 @@ type FlightData struct {
 	Origin              FlightOriginDestinationData
 	Destination         FlightOriginDestinationData
 	Operator            FlightOperator
-	Identifier          FlightIdentifier
+	Identifiers         FlightIdentifiers
 	InboundFlightId     string
 	FlightNumber        string
 	Route               string
@@ -73,7 +73,7 @@ func (d *FlightData) UnmarshalJSON(data []byte) error {
 	}
 
 	*d = FlightData{
-		Identifier:          raw.FlightIdentifier(),
+		Identifiers:         raw.FlightIdentifier(),
 		Operator:            raw.FlightOperator(),
 		FlightId:            raw.FaFlightId,
 		FlightNumber:        raw.FlightNumber,
@@ -116,7 +116,7 @@ func (d *FlightData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type FlightIdentifier struct {
+type FlightIdentifiers struct {
 	// Either the operator code followed by the flight number for the flight (for commercial flights)
 	// or the aircraft's registration (for general aviation)
 	Identifier string
@@ -277,8 +277,8 @@ type rawFlightData struct {
 	PositionOnly        bool                           `json:"position_only"`
 }
 
-func (d rawFlightData) FlightIdentifier() FlightIdentifier {
-	return FlightIdentifier{
+func (d rawFlightData) FlightIdentifier() FlightIdentifiers {
+	return FlightIdentifiers{
 		Identifier: d.Ident,
 		ICAO:       d.IdentIcao,
 		IATA:       d.IdentIata,

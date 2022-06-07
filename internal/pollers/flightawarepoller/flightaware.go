@@ -20,18 +20,17 @@ type Poller struct {
 	flightawareConfig flightaware.Config
 }
 
-func NewFlightAwarePoller(conf poller.Config, flightawareConf *flightaware.Config) (*Poller, error) {
+func NewPoller(conf poller.Config, flightawareConf *flightaware.Config) (*Poller, error) {
 	var (
 		faConf       = flightaware.DefaultConfig()
 		datastoreErr error
 	)
 
-	if flightawareConf != nil {
-		if conf.FlightAware != nil {
-			faConf = *conf.FlightAware
-		} else {
-			faConf = *flightawareConf
-		}
+	switch {
+	case conf.FlightAware != nil:
+		faConf = *conf.FlightAware
+	case flightawareConf != nil:
+		faConf = *flightawareConf
 	}
 
 	p := &Poller{
@@ -49,27 +48,18 @@ func NewFlightAwarePoller(conf poller.Config, flightawareConf *flightaware.Confi
 	return p, nil
 }
 
-func (p Poller) FlightAwareConfig() flightaware.Config {
+func (p *Poller) FlightAwareConfig() flightaware.Config {
 	return p.flightawareConfig
 }
 
-func (p Poller) UseDatastore() bool {
-	return p.datastore != nil
-}
-
-func (p Poller) Datastore() datastore.Datastore[CacheEntry] {
+func (p *Poller) Datastore() datastore.Datastore[CacheEntry] {
 	return p.datastore
 }
 
-func (p Poller) FlightAwareClient() *flightaware.Client {
+func (p *Poller) FlightAwareClient() *flightaware.Client {
 	return p.flightawareClient
 }
 
 func (p *Poller) initFlightAwareClient(authData authdata.AuthData) {
 	p.flightawareClient = flightaware.NewClient(authData)
 }
-
-// func prettyPrint(data any) {
-// 	d, _ := yaml.Marshal(data)
-// 	log.Println(string(d))
-// }

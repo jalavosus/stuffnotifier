@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/jalavosus/stuffnotifier/internal/utils"
@@ -37,13 +36,13 @@ func (c *Client) SetHttpTimeout(timeout time.Duration) *Client {
 	return c
 }
 
-func (c Client) FlightInformation(ctx context.Context, flightIdentifier string, flightIdentifierType IdentifierType) (*FlightDataResponse, error) {
+func (c *Client) FlightInformation(ctx context.Context, params FlightInformationParams) (*FlightDataResponse, error) {
 	var response *FlightDataResponse
 
-	params := url.Values{}
-	params.Set(identTypeParam, flightIdentifierType.String())
-
-	endpoint := fmt.Sprintf(flightsUri, flightIdentifier) + "?" + params.Encode()
+	endpoint, _, err := params.UrlParams()
+	if err != nil {
+		return nil, err
+	}
 
 	resp, err := c.httpRequest(ctx, endpoint)
 	if err != nil {
@@ -57,7 +56,7 @@ func (c Client) FlightInformation(ctx context.Context, flightIdentifier string, 
 	return response, nil
 }
 
-func (c Client) AirportInformation(ctx context.Context, airportIdentifier string) (*AirportData, error) {
+func (c *Client) AirportInformation(ctx context.Context, airportIdentifier string) (*AirportData, error) {
 	var response *AirportData
 
 	endpoint := fmt.Sprintf(airportsUri, airportIdentifier)
@@ -74,7 +73,34 @@ func (c Client) AirportInformation(ctx context.Context, airportIdentifier string
 	return response, nil
 }
 
-func (c Client) httpRequest(ctx context.Context, endpoint string) ([]byte, error) {
+// FlightIdentifiers returns the flight identifiers (ICAO, IATA, etc.) for a given flight
+// with the passed FlightAware internal ID.
+func (c *Client) FlightIdentifiers(ctx context.Context, params FlightInformationParams) (*FlightIdentifiers, string, error) {
+	var (
+		response   *FlightIdentifiers
+		faFlightId string
+	)
+
+	flightData, err := c.FlightInformation(ctx, params)
+	if err != nil {
+		return nil, "", err
+	}
+
+	flights := flightData.Flights
+	if len(flights) == 0 {
+		return nil, "", ErrNoFlightsFound
+	}
+
+	flight, ok := FindFlightFromParams(flights, params)
+	if ok {
+		response = &flight.Identifiers
+		faFlightId = flight.FlightId
+	}
+
+	return response, faFlightId, nil
+}
+
+func (c *Client) httpRequest(ctx context.Context, endpoint string) ([]byte, error) {
 	uri := utils.BuildRequestEndpoint(baseApiEndpoint, endpoint)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)

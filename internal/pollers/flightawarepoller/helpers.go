@@ -2,10 +2,7 @@ package flightawarepoller
 
 import (
 	"context"
-	"sort"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/jalavosus/stuffnotifier/internal/utils"
 	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
@@ -18,8 +15,10 @@ func (p Poller) buildCacheEntry(
 ) CacheEntry {
 
 	return CacheEntry{
+		PollerId:          p.PollerIdBytes(),
+		FlightIdHash:      utils.SHA3(flightData.FlightId),
 		InternalId:        flightData.FlightId,
-		FlightId:          flightData.Identifier.IATA,
+		FlightId:          flightData.Identifiers.IATA,
 		FlightData:        flightData,
 		OriginData:        origin,
 		DestinationData:   destination,
@@ -30,51 +29,51 @@ func (p Poller) buildCacheEntry(
 	}
 }
 
-func (p Poller) fetchFlight(ctx context.Context, flightId string, flightIdType flightaware.IdentifierType, nearest bool) (*flightaware.FlightData, error) {
-	var flights []flightaware.FlightData
+func (p Poller) fetchFlightIdentifiers(
+	ctx context.Context,
+	flightId string,
+	flightIdType flightaware.IdentifierType,
+) (*flightaware.FlightIdentifiers, string, error) {
+
+	params := buildFlightInformationParams(flightId, flightIdType)
 
 	ctx, cancel := context.WithTimeout(ctx, fetchDataTimeout)
 	defer cancel()
 
-	data, err := p.flightawareClient.FlightInformation(ctx, flightId, flightIdType)
+	identifiers, apiId, err := p.flightawareClient.FlightIdentifiers(ctx, params)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return identifiers, apiId, nil
+}
+
+func (p Poller) fetchFlight(
+	ctx context.Context,
+	flightId string,
+	flightIdType flightaware.IdentifierType,
+) (*flightaware.FlightData, error) {
+
+	params := buildFlightInformationParams(flightId, flightIdType)
+
+	ctx, cancel := context.WithTimeout(ctx, fetchDataTimeout)
+	defer cancel()
+
+	data, err := p.flightawareClient.FlightInformation(ctx, params)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(data.Flights) == 0 {
-		return nil, errors.New("no flights found")
+		return nil, flightaware.ErrNoFlightsFound
 	}
 
-	switch flightIdType {
-	case flightaware.FaFlightIdIdent:
-		flights = data.Flights
-	case flightaware.DesignatorIdent:
-		now := utils.ToLocalTime(time.Now())
-		y1, m1, d1 := now.Date()
-
-		for _, fl := range data.Flights {
-			var appendFlight = true
-
-			if nearest {
-				departure := utils.ToLocalTime(fl.GateDepartureTime.Scheduled)
-				y2, m2, d2 := departure.Date()
-
-				appendFlight = y2 >= y1 && m2 >= m1 && d2 >= d1
-			}
-
-			if appendFlight {
-				flights = append(flights, fl)
-			}
-		}
+	flight, ok := flightaware.FindFlightFromParams(data.Flights, params)
+	if ok {
+		return flight, nil
 	}
 
-	sort.Slice(flights, func(i, j int) bool {
-		return flights[i].GateDepartureTime.Scheduled.Before(flights[j].GateDepartureTime.Scheduled)
-	})
-
-	flight := utils.SliceFirst(flights)
-
-	return &flight, nil
+	return nil, flightaware.ErrNoFlightsFound
 }
 
 func (p Poller) fetchAirport(ctx context.Context, airportId string) (*flightaware.AirportData, error) {
@@ -87,6 +86,30 @@ func (p Poller) fetchAirport(ctx context.Context, airportId string) (*flightawar
 	}
 
 	return data, nil
+}
+
+func (p Poller) fetchAll(
+	ctx context.Context,
+	flightId string,
+	idType flightaware.IdentifierType,
+) (flightData *flightaware.FlightData, originInfo, destinationInfo *flightaware.AirportData, err error) {
+
+	flightData, err = p.fetchFlight(ctx, flightId, idType)
+	if err != nil {
+		return
+	}
+
+	originInfo, err = p.fetchAirport(ctx, flightData.Origin.Identifiers.ICAO)
+	if err != nil {
+		return
+	}
+
+	destinationInfo, err = p.fetchAirport(ctx, flightData.Destination.Identifiers.ICAO)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (p Poller) fetchCacheEntry(ctx context.Context, cacheKey string) (cacheData *CacheEntry, ok bool, err error) {
@@ -115,6 +138,19 @@ func (p *Poller) setCacheEntry(
 	cacheData := p.buildCacheEntry(flightData, origin, dest, notificationsSent)
 
 	return p.Datastore().Insert(ctx, cacheKey, cacheData)
+}
+
+func buildFlightInformationParams(flightId string, idType flightaware.IdentifierType) (params flightaware.FlightInformationParams) {
+	params = flightaware.FlightInformationParams{}
+
+	switch idType {
+	case flightaware.FaFlightIdIdent:
+		params.FlightId = utils.ToPointer(flightId)
+	case flightaware.DesignatorIdent:
+		params.FlightDesignator = utils.ToPointer(flightId)
+	}
+
+	return
 }
 
 func validTimestampActual(ts flightaware.FlightTimestamp) bool {

@@ -23,10 +23,14 @@ const (
 	airportsUri string = "airports/%s"
 )
 
-func FlightInformation(ctx context.Context, authData authdata.AuthData, flightIdentifier string, flightIdentifierType IdentifierType) (*FlightDataResponse, error) {
-	return NewClient(authData).FlightInformation(ctx, flightIdentifier, flightIdentifierType)
+func GetFlightInformation(ctx context.Context, authData authdata.AuthData, params FlightInformationParams) (*FlightDataResponse, error) {
+	return NewClient(authData).FlightInformation(ctx, params)
 }
 
-func AirportInformation(ctx context.Context, authData authdata.AuthData, airportIdentifier string) (*AirportData, error) {
+func GetAirportInformation(ctx context.Context, authData authdata.AuthData, airportIdentifier string) (*AirportData, error) {
 	return NewClient(authData).AirportInformation(ctx, airportIdentifier)
+}
+
+func GetFlightIdentifiers(ctx context.Context, authData authdata.AuthData, params FlightInformationParams) (*FlightIdentifiers, string, error) {
+	return NewClient(authData).FlightIdentifiers(ctx, params)
 }

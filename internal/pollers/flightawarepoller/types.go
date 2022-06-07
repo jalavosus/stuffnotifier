@@ -8,6 +8,8 @@ import (
 )
 
 type CacheEntry struct {
+	PollerId          []byte
+	FlightIdHash      []byte
 	FlightData        *flightaware.FlightData
 	OriginData        *flightaware.AirportData
 	DestinationData   *flightaware.AirportData

@@ -55,6 +55,15 @@ func NewConcurrentParams(authData authdata.AuthData, cacheKey string) *Concurren
 	return p
 }
 
+func NewConcurrentParamsWithChannel(authData authdata.AuthData, cacheKey string, errCh chan error) *ConcurrentParams {
+	p := new(ConcurrentParams)
+	p.AuthData = authData
+	p.CacheKey = cacheKey
+	p.ErrCh = errCh
+
+	return p
+}
+
 func (p *ConcurrentParams) Cleanup(err error, ticker *time.Ticker) {
 	ticker.Stop()
 	p.ErrCh <- err

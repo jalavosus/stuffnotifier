@@ -29,13 +29,17 @@ func (p *Poller) Start(ctx context.Context, flightId string, flightIdType flight
 
 	p.initFlightAwareClient(authData)
 
-	cacheKey := "flightdata:" + flightId + "_" + flightIdType.String()
+	_, apiId, err := p.fetchFlightIdentifiers(ctx, flightId, flightIdType)
+	if err != nil {
+		return err
+	}
+
+	cacheKey := "flightdata:" + apiId
 	concurrentParams := poller.NewConcurrentParams(authData, cacheKey)
 
 	go p.pollFlightData(
 		ctx,
-		flightId,
-		flightIdType,
+		apiId,
 		concurrentParams,
 	)
 
@@ -46,16 +50,14 @@ func (p *Poller) Start(ctx context.Context, flightId string, flightIdType flight
 func (p *Poller) pollFlightData(
 	ctx context.Context,
 	flightId string,
-	flightIdType flightaware.IdentifierType,
 	pollerParams *poller.ConcurrentParams,
 ) {
-
-	fetchNearest := flightIdType == flightaware.DesignatorIdent
 
 	var (
 		flightData                  *flightaware.FlightData
 		originInfo, destinationInfo *flightaware.AirportData
 		gotCachedData               bool
+		fetchAllErr                 error
 	)
 
 	var (
@@ -68,41 +70,22 @@ func (p *Poller) pollFlightData(
 		pollerParams.Cleanup(err, ticker)
 	}
 
-	if p.UseDatastore() {
-		p.LogDebug("checking for cached data...")
-		cached, ok, cacheErr := p.fetchCacheEntry(ctx, cacheKey)
-		if cacheErr != nil {
-			p.LogError("error checking for cached data", zap.Error(cacheErr))
-		} else if ok {
-			flightData = cached.FlightData
-			originInfo = cached.OriginData
-			destinationInfo = cached.DestinationData
-			notifsSent = cached.NotificationsSent
+	p.LogDebug("checking for cached data...")
+	if cached, ok, cacheErr := p.fetchCacheEntry(ctx, cacheKey); cacheErr != nil {
+		p.LogError("error checking for cached data", zap.Error(cacheErr))
+	} else if ok {
+		flightData = cached.FlightData
+		originInfo = cached.OriginData
+		destinationInfo = cached.DestinationData
+		notifsSent = cached.NotificationsSent
 
-			gotCachedData = true
-		}
+		gotCachedData = true
 	}
 
 	if !gotCachedData {
-		var (
-			flightDataErr, infoErr error
-		)
-
-		flightData, flightDataErr = p.fetchFlight(ctx, flightId, flightIdType, fetchNearest)
-		if flightDataErr != nil {
-			cleanup(flightDataErr)
-			return
-		}
-
-		originInfo, infoErr = p.fetchAirport(ctx, flightData.Origin.Identifiers.ICAO)
-		if infoErr != nil {
-			cleanup(infoErr)
-			return
-		}
-
-		destinationInfo, infoErr = p.fetchAirport(ctx, flightData.Destination.Identifiers.ICAO)
-		if infoErr != nil {
-			cleanup(infoErr)
+		flightData, originInfo, destinationInfo, fetchAllErr = p.fetchAll(ctx, flightId, flightaware.FaFlightIdIdent)
+		if fetchAllErr != nil {
+			cleanup(fetchAllErr)
 			return
 		}
 	}
@@ -111,7 +94,7 @@ func (p *Poller) pollFlightData(
 
 	p.LogInfo(
 		"starting flight data poller",
-		zap.String("flight_identifier", flightData.Identifier.IATA),
+		zap.String("flight_identifier", flightData.Identifiers.IATA),
 		zap.String("flight_datetime", utils.FormatTimeWithZone(flightData.GateDepartureTime.Scheduled, originInfo.Timezone, true)),
 		zap.String("check_interval", p.PollInterval().String()),
 	)
@@ -132,7 +115,7 @@ func (p *Poller) pollFlightData(
 			if !isInitial {
 				var flightDataErr error
 
-				flightData, flightDataErr = p.fetchFlight(ctx, flightId, flightIdType, fetchNearest)
+				flightData, flightDataErr = p.fetchFlight(ctx, flightId, flightaware.FaFlightIdIdent)
 				if flightDataErr != nil {
 					p.LogError("error fetching flight data", zap.Error(flightDataErr))
 					continue
@@ -141,22 +124,20 @@ func (p *Poller) pollFlightData(
 				isInitial = false
 			}
 
-			if p.UseDatastore() {
-				setCacheErr := p.setCacheEntry(
-					ctx,
-					cacheKey,
-					flightData,
-					originInfo,
-					destinationInfo,
-					notifsSent,
-				)
+			setCacheErr := p.setCacheEntry(
+				ctx,
+				cacheKey,
+				flightData,
+				originInfo,
+				destinationInfo,
+				notifsSent,
+			)
 
-				if setCacheErr != nil {
-					p.LogError("error setting flight data in cache", zap.Error(setCacheErr))
-				}
+			if setCacheErr != nil {
+				p.LogError("error setting flight data in cache", zap.Error(setCacheErr))
 			}
 
-			flightIdentifier := flightData.Identifier.IATA
+			flightIdentifier := flightData.Identifiers.IATA
 
 			var (
 				flightEvents = newPastFlightEvents(flightData)
@@ -195,20 +176,18 @@ func (p *Poller) pollFlightData(
 
 				inPreArrivalWindow := arrivalOffset <= p.FlightAwareConfig().Notifications.PreArrival.Offset
 
-				if !notifsSent.PreArrival && inPreArrivalWindow {
-					msg.SetPlaintextTemplate(messages.PreArrivalAlertPlaintextTemplate)
-					notifType = PreArrivalNotification
-
-					break DetermineNotify
-				} else if didSendGateDeparture && didSendTakeoff {
-					continue
-				}
-
 				var (
 					isGateDeparture, isTakeoff bool
 				)
 
 				switch {
+				case !notifsSent.PreArrival && inPreArrivalWindow:
+					msg.SetPlaintextTemplate(messages.PreArrivalAlertPlaintextTemplate)
+					notifType = PreArrivalNotification
+
+					break DetermineNotify
+				case didSendGateDeparture && didSendTakeoff:
+					continue
 				case flightEvents.DepartedGate && !flightEvents.Takeoff:
 					notifType = GateDepartureNotification
 					isGateDeparture = true
@@ -222,17 +201,15 @@ func (p *Poller) pollFlightData(
 				didSendLanding := flightEvents.Landed && notifsSent.Landing
 				didSendGateArrival := flightEvents.ArrivedGate && notifsSent.GateArrival
 
-				if didSendGateArrival {
-					break DetermineNotify
-				} else if didSendLanding {
-					continue
-				}
-
 				var (
 					isGateArrival, isLanding bool
 				)
 
 				switch {
+				case didSendGateArrival:
+					break DetermineNotify
+				case didSendLanding:
+					continue
 				case flightEvents.Landed && !flightEvents.ArrivedGate:
 					notifType = LandingNotification
 					isLanding = true

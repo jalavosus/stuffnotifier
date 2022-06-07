@@ -89,7 +89,7 @@ func TestFlightInformation(t *testing.T) {
 			ctx, cancel := context.WithTimeout(rootCtx, 10*time.Second)
 			defer cancel()
 
-			got, err := flightaware.FlightInformation(
+			got, err := flightaware.GetFlightInformation(
 				ctx,
 				authData,
 				tt.args.flightIdentifier,
@@ -170,7 +170,7 @@ func TestAirportInformation(t *testing.T) {
 			ctx, cancel := context.WithTimeout(rootCtx, 10*time.Second)
 			defer cancel()
 
-			got, err := flightaware.AirportInformation(
+			got, err := flightaware.GetAirportInformation(
 				ctx,
 				authData,
 				tt.args.identifier,
