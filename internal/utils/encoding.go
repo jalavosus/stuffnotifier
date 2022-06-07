@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+
+	"golang.org/x/crypto/sha3"
 )
 
 // BytesLike is any string or byteslice.
@@ -31,21 +33,39 @@ func DecodeB64(data string) ([]byte, error) {
 	return base64.StdEncoding.DecodeString(data)
 }
 
-// Sha256 returns the SHA256 sum of the passed bytes/string
+// SHA3 returns the SHA3-256 sum of the passed bytes/string,
 // as bytes.
-func Sha256[T BytesLike](data T) (sum []byte) {
+func SHA3[T BytesLike](data T) (sum []byte) {
 	sum = make([]byte, 32)
+	shaSum := sha3.Sum256(bytesLikeToBytes(data))
+	copy(sum, shaSum[:])
 
+	return
+}
+
+// SHA3Hex returns the result of SHA3 as a
+// human-readable string.
+func SHA3Hex[T BytesLike](data T) (sumHex string) {
+	shaSum := SHA3(data)
+	sumHex = fmt.Sprintf("%x", shaSum)
+
+	return
+}
+
+// SHA256 returns the SHA256 sum of the passed bytes/string
+// as bytes.
+func SHA256[T BytesLike](data T) (sum []byte) {
+	sum = make([]byte, 32)
 	shaSum := sha256.Sum256(bytesLikeToBytes(data))
 	copy(sum, shaSum[:])
 
 	return
 }
 
-// Sha256Hex returns the result of Sha256 as a
+// SHA256Hex returns the result of SHA256 as a
 // human-readable string.
-func Sha256Hex[T BytesLike](data T) (sumHex string) {
-	shaSum := Sha256(data)
+func SHA256Hex[T BytesLike](data T) (sumHex string) {
+	shaSum := SHA256(data)
 	sumHex = fmt.Sprintf("%x", shaSum)
 
 	return
