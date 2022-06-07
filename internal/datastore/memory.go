@@ -21,9 +21,9 @@ const (
 )
 
 type memoryDatastore[T any] struct {
+	*baseDatastore[T]
 	client       *ristretto.Cache
 	clientConfig *ristretto.Config
-	config       datastoreConfig
 }
 
 func NewInMemoryDatastore[T any](conf *Config) (Datastore[T], error) {
@@ -34,15 +34,14 @@ func NewInMemoryDatastore[T any](conf *Config) (Datastore[T], error) {
 		datastoreConf = conf.datastoreConfig()
 	}
 
-	m := new(memoryDatastore[T])
-
-	m.config = datastoreConf
-
-	m.clientConfig = &ristretto.Config{
-		NumCounters: inMemoryCacheNumCounters,
-		MaxCost:     inMemoryCacheMaxCost,
-		BufferItems: inMemoryCacheBufferItems,
-		KeyToHash:   keyHasher,
+	m := &memoryDatastore[T]{
+		baseDatastore: newBaseDatastore[T](datastoreConf),
+		clientConfig: &ristretto.Config{
+			NumCounters: inMemoryCacheNumCounters,
+			MaxCost:     inMemoryCacheMaxCost,
+			BufferItems: inMemoryCacheBufferItems,
+			KeyToHash:   keyHasher,
+		},
 	}
 
 	m.client, err = ristretto.NewCache(m.clientConfig)
@@ -53,17 +52,17 @@ func NewInMemoryDatastore[T any](conf *Config) (Datastore[T], error) {
 	return m, nil
 }
 
-func (m memoryDatastore[T]) Exists(_ context.Context, key string) (bool, error) {
+func (m *memoryDatastore[T]) Exists(_ context.Context, key string) (bool, error) {
 	_, ok := m.client.Get(m.prefixKey(key))
 	return ok, nil
 }
 
-func (m memoryDatastore[T]) CheckTtl(_ context.Context, key string) (time.Duration, bool, error) {
+func (m *memoryDatastore[T]) CheckTtl(_ context.Context, key string) (time.Duration, bool, error) {
 	ttl, ok := m.client.GetTTL(m.prefixKey(key))
 	return ttl, ok, nil
 }
 
-func (m memoryDatastore[T]) Get(_ context.Context, key string) (*T, bool, error) {
+func (m *memoryDatastore[T]) Get(_ context.Context, key string) (*T, bool, error) {
 	res, ok := m.client.Get(m.prefixKey(key))
 	if !ok {
 		return nil, false, nil
@@ -72,7 +71,7 @@ func (m memoryDatastore[T]) Get(_ context.Context, key string) (*T, bool, error)
 	return fullDecode[T](res.(string))
 }
 
-func (m memoryDatastore[T]) Insert(_ context.Context, key string, data T) error {
+func (m *memoryDatastore[T]) Insert(_ context.Context, key string, data T) error {
 	encoded, err := fullEncode[T](data)
 	if err != nil {
 		return err
@@ -86,12 +85,12 @@ func (m memoryDatastore[T]) Insert(_ context.Context, key string, data T) error 
 	return nil
 }
 
-func (m memoryDatastore[T]) Delete(_ context.Context, key string) error {
+func (m *memoryDatastore[T]) Delete(_ context.Context, key string) error {
 	m.client.Del(m.prefixKey(key))
 	return nil
 }
 
-func (m memoryDatastore[T]) UpdateTtl(_ context.Context, key string, newTtl time.Duration) (bool, error) {
+func (m *memoryDatastore[T]) UpdateTtl(_ context.Context, key string, newTtl time.Duration) (bool, error) {
 	key = m.prefixKey(key)
 
 	res, ok := m.client.Get(key)
@@ -107,33 +106,13 @@ func (m memoryDatastore[T]) UpdateTtl(_ context.Context, key string, newTtl time
 	return true, nil
 }
 
-func (m memoryDatastore[T]) DefaultTtl() time.Duration {
-	return m.config.DefaultTtl
-}
-
-func (m *memoryDatastore[T]) SetDefaultTtl(newTtl time.Duration) {
-	m.config.DefaultTtl = newTtl
-}
-
-func (m memoryDatastore[T]) KeyPrefix() string {
-	return m.config.KeyPrefix
-}
-
-func (m *memoryDatastore[T]) SetKeyPrefix(newPrefix string) {
-	m.config.KeyPrefix = newPrefix
-}
-
-func (m memoryDatastore[T]) prefixKey(key string) string {
-	return m.KeyPrefix() + "____" + key
-}
-
 func keyHasher(key any) (x, y uint64) {
 	k, ok := key.(string)
 	if !ok {
 		return ristrettoz.KeyToHash(key)
 	}
 
-	hash := utils.Sha256(k)
+	hash := utils.SHA256(k)
 
 	hashSplitLen := len(hash) / 2
 	x = binary.LittleEndian.Uint64(hash[:hashSplitLen])

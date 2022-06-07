@@ -7,8 +7,6 @@ import (
 
 	"github.com/go-redis/redis/v9"
 	"github.com/pkg/errors"
-
-	"github.com/jalavosus/stuffnotifier/internal/utils"
 )
 
 const (
@@ -18,61 +16,9 @@ const (
 )
 
 type redisDatastore[T any] struct {
+	*baseDatastore[T]
 	client       *redis.Client
-	config       datastoreConfig
 	clientConfig redisDatastoreConfig
-}
-
-type RedisDatastoreConfig struct {
-	Host       *string        `json:"host,omitempty" yaml:"host,omitempty" toml:"Host,omitempty"`
-	Port       *int           `json:"port,omitempty" yaml:"port,omitempty" toml:"Port,omitempty"`
-	Password   *string        `json:"password,omitempty" yaml:"password,omitempty" toml:"Password,omitempty"`
-	Prefix     *string        `json:"prefix,omitempty" yaml:"prefix,omitempty" toml:"Prefix,omitempty"`
-	DefaultTtl *time.Duration `json:"default_ttl,omitempty" yaml:"default_ttl,omitempty" toml:"DefaultTTL,omitempty"`
-}
-
-func (c *RedisDatastoreConfig) toInternalConfig() redisDatastoreConfig {
-	config := defaultRedisDatastoreConfig()
-
-	if confHost, ok := utils.FromPointer(c.Host); ok && confHost != "" {
-		config.Host = confHost
-	}
-
-	if confPort, ok := utils.FromPointer(c.Port); ok && confPort != 0 {
-		config.Port = confPort
-	}
-
-	if confPass, ok := utils.FromPointer(c.Password); ok {
-		config.Password = confPass
-	}
-
-	if confPrefix, ok := utils.FromPointer(c.Prefix); ok {
-		config.Prefix = confPrefix
-	}
-
-	if confTtl, ok := utils.FromPointer(c.DefaultTtl); ok && confTtl != time.Duration(0) {
-		config.DefaultTtl = confTtl
-	}
-
-	return config
-}
-
-type redisDatastoreConfig struct {
-	Host       string
-	Password   string
-	Prefix     string
-	Port       int
-	DefaultTtl time.Duration
-}
-
-func defaultRedisDatastoreConfig() redisDatastoreConfig {
-	return redisDatastoreConfig{
-		Host:       redisDefaultHost,
-		Port:       redisDefaultPort,
-		Password:   redisDefaultPassword,
-		Prefix:     DefaultKeyPrefix,
-		DefaultTtl: DefaultTtl,
-	}
 }
 
 // NewRedisDatastore wraps NewRedisDatastoreContext,
@@ -108,13 +54,13 @@ func NewRedisDatastoreContext[T any](ctx context.Context, conf *Config) (Datasto
 	}
 
 	return &redisDatastore[T]{
-		client:       client,
-		clientConfig: clientConfig,
-		config:       datastoreConf,
+		baseDatastore: newBaseDatastore[T](datastoreConf),
+		client:        client,
+		clientConfig:  clientConfig,
 	}, nil
 }
 
-func (d redisDatastore[T]) Exists(ctx context.Context, key string) (bool, error) {
+func (d *redisDatastore[T]) Exists(ctx context.Context, key string) (bool, error) {
 	res, err := d.client.Exists(ctx, d.prefixKey(key)).Result()
 	if err != nil {
 		return false, err
@@ -123,7 +69,7 @@ func (d redisDatastore[T]) Exists(ctx context.Context, key string) (bool, error)
 	return res == 1, nil
 }
 
-func (d redisDatastore[T]) CheckTtl(ctx context.Context, key string) (time.Duration, bool, error) {
+func (d *redisDatastore[T]) CheckTtl(ctx context.Context, key string) (time.Duration, bool, error) {
 	res, err := d.client.TTL(ctx, d.prefixKey(key)).Result()
 	if err != nil {
 		return time.Duration(0), false, err
@@ -138,7 +84,7 @@ func (d redisDatastore[T]) CheckTtl(ctx context.Context, key string) (time.Durat
 	return res, true, nil
 }
 
-func (d redisDatastore[T]) Get(ctx context.Context, key string) (*T, bool, error) {
+func (d *redisDatastore[T]) Get(ctx context.Context, key string) (*T, bool, error) {
 	res, err := d.client.Get(ctx, d.prefixKey(key)).Result()
 	if err != nil {
 		if err == redis.Nil {
@@ -151,7 +97,7 @@ func (d redisDatastore[T]) Get(ctx context.Context, key string) (*T, bool, error
 	return fullDecode[T](res)
 }
 
-func (d redisDatastore[T]) Insert(ctx context.Context, key string, data T) error {
+func (d *redisDatastore[T]) Insert(ctx context.Context, key string, data T) error {
 	encoded, err := fullEncode[T](data)
 	if err != nil {
 		return err
@@ -160,31 +106,11 @@ func (d redisDatastore[T]) Insert(ctx context.Context, key string, data T) error
 	return d.client.Set(ctx, d.prefixKey(key), encoded, d.DefaultTtl()).Err()
 }
 
-func (d redisDatastore[T]) Delete(ctx context.Context, key string) error {
+func (d *redisDatastore[T]) Delete(ctx context.Context, key string) error {
 	_, err := d.client.Del(ctx, d.prefixKey(key)).Result()
 	return err
 }
 
-func (d redisDatastore[T]) UpdateTtl(ctx context.Context, key string, newTtl time.Duration) (bool, error) {
+func (d *redisDatastore[T]) UpdateTtl(ctx context.Context, key string, newTtl time.Duration) (bool, error) {
 	return d.client.Expire(ctx, d.prefixKey(key), newTtl).Result()
-}
-
-func (d redisDatastore[T]) DefaultTtl() time.Duration {
-	return d.config.DefaultTtl
-}
-
-func (d *redisDatastore[T]) SetDefaultTtl(newTtl time.Duration) {
-	d.config.DefaultTtl = newTtl
-}
-
-func (d redisDatastore[T]) KeyPrefix() string {
-	return d.config.KeyPrefix
-}
-
-func (d *redisDatastore[T]) SetKeyPrefix(newPrefix string) {
-	d.config.KeyPrefix = newPrefix
-}
-
-func (d redisDatastore[T]) prefixKey(key string) string {
-	return d.KeyPrefix() + "____" + key
 }
