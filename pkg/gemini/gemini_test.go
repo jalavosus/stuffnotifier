@@ -66,8 +66,8 @@ func TestSymbolDetails(t *testing.T) {
 	}
 
 	tests := []struct {
-		TestCase
 		want detailsWant
+		TestCase
 	}{
 		{
 			ethBtcTestCase,
@@ -166,8 +166,8 @@ func TestTicker(t *testing.T) {
 	}
 
 	tests := []struct {
-		TestCase
 		args args
+		TestCase
 	}{
 		{
 			ethBtcTestCase,

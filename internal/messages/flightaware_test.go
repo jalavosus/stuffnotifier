@@ -29,8 +29,8 @@ func TestFlightAwareDepartureAlert_FormatPlaintext(t *testing.T) {
 		IsGateDeparture      bool
 	}
 	tests := []struct {
-		fields fields
 		name   string
+		fields fields
 	}{
 		{
 			name: "test takeoff/local timezone",

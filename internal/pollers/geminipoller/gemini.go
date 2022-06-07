@@ -17,8 +17,8 @@ import (
 type Poller struct {
 	datastore datastore.Datastore[CacheEntry]
 	*poller.BasePoller
-	geminiConfig gemini.Config
 	geminiClient *gemini.Client
+	geminiConfig gemini.Config
 }
 
 func NewPoller(conf poller.Config, geminiConfig *gemini.Config) (*Poller, error) {

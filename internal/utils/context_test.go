@@ -14,10 +14,10 @@ func TestTimeoutFromContext(t *testing.T) {
 	rootCtx := context.Background()
 
 	tests := []struct {
+		check   assert.ValueAssertionFunc
 		name    string
 		timeout time.Duration
 		wantOk  bool
-		check   assert.ValueAssertionFunc
 	}{
 		{
 			name:    "ok=true",

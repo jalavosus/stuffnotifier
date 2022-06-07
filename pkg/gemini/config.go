@@ -18,9 +18,9 @@ const (
 )
 
 type Config struct {
-	PollInterval  time.Duration       `json:"poll_interval" yaml:"poll_interval" toml:"PollInterval"`
 	Auth          *AuthConfig         `json:"auth,omitempty" yaml:"auth,omitempty" toml:"Auth"`
 	Notifications NotificationsConfig `json:"notifications" yaml:"notifications" toml:"Notifications"`
+	PollInterval  time.Duration       `json:"poll_interval" yaml:"poll_interval" toml:"PollInterval"`
 }
 
 type AuthConfig struct {
@@ -45,10 +45,10 @@ type NotificationsConfig struct {
 }
 
 type SpotPriceNotificationsConfig struct {
-	BaseCurrency  string           `json:"base_currency" yaml:"base_currency" toml:"BaseCurrency"`
-	QuoteCurrency string           `json:"quote_currency" yaml:"quote_currency" toml:"QuoteCurrency"`
 	Symbol        *string          `json:"symbol,omitempty" yaml:"symbol,omitempty" toml:"Symbol,omitempty"`
 	BaseAmount    *decimal.Decimal `json:"base_amount,omitempty" yaml:"base_amount,omitempty" toml:"BaseAmount,omitempty"`
+	BaseCurrency  string           `json:"base_currency" yaml:"base_currency" toml:"BaseCurrency"`
+	QuoteCurrency string           `json:"quote_currency" yaml:"quote_currency" toml:"QuoteCurrency"`
 }
 
 func (c SpotPriceNotificationsConfig) CurrencySymbol() string {

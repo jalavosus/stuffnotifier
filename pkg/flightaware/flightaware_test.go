@@ -8,6 +8,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/jalavosus/stuffnotifier/internal/utils"
 	"github.com/jalavosus/stuffnotifier/pkg/authdata"
 	"github.com/jalavosus/stuffnotifier/pkg/flightaware"
 )
@@ -89,11 +90,18 @@ func TestFlightInformation(t *testing.T) {
 			ctx, cancel := context.WithTimeout(rootCtx, 10*time.Second)
 			defer cancel()
 
+			params := flightaware.FlightInformationParams{}
+			switch tt.args.identifierType {
+			case flightaware.FaFlightIdIdent:
+				params.FlightId = utils.ToPointer(tt.args.flightIdentifier)
+			case flightaware.DesignatorIdent:
+				params.FlightDesignator = utils.ToPointer(tt.args.flightIdentifier)
+			}
+
 			got, err := flightaware.GetFlightInformation(
 				ctx,
 				authData,
-				tt.args.flightIdentifier,
-				tt.args.identifierType,
+				params,
 			)
 
 			if tt.wantErr {

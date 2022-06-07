@@ -16,10 +16,10 @@ import (
 )
 
 type BasePoller struct {
-	pollerId     xid.ID
 	logger       *zap.Logger
 	config       Config
 	pollInterval time.Duration
+	pollerId     xid.ID
 }
 
 func NewBasePoller(conf Config) *BasePoller {
